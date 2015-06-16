@@ -1,0 +1,145 @@
+/* GENERIC STYLES */
+.center {
+	text-align: center;
+}
+.right {
+	text-align: right;
+}
+.bold {
+	font-weight: bold;
+}
+.even {
+	background-color: #00283B;
+}
+
+h1, .sh1 {
+	font-size: 22px;
+	margin: 0;
+}
+h2, .sh2 {
+	font-size: 18px;
+	margin: 0;
+}
+h3, .sh3 {
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: underline;
+	margin: 0;
+}
+input {
+	color: #333333;
+	width: 100%;
+}
+select {
+	max-width: 100%;
+}
+a, a:visited {
+	color: #AAAAAA;
+}
+/* END GENERIC STYLES */
+
+
+/* SPECIFIC STYLES */
+body {
+	/*background: url("background.jpg") no-repeat scroll center 0 / cover  #332c33;*/
+	max-width: 960px;
+	margin: 0 auto;
+	color: white;/*#333333;*/
+}
+.main {
+	/*position: relative;
+	min-height: 100%;*/
+	margin-top: 50px;
+	box-shadow: 0 0 15px 0 rgba(0, 0, 0, 1);
+}
+.menu_top { 
+	background-color: #223355;
+	border: 2px solid #000000;
+	padding: 10px 40px;
+}
+.content {
+    background-color: #002236;
+    border: 2px solid #000000;
+	border-top: none;
+    min-height: 800px;
+    padding: 20px 10px 10px;
+}
+.box {
+	border: 1px solid #00aaff;
+    border-radius : 5px;
+	box-shadow: 0 0 10px #00aaff;
+}
+ul.menu {
+	margin-top: 0;
+	margin-bottom: 0;
+	padding-left: 0;
+	cursor: pointer;
+}
+ul.menu li {
+	border : 1px solid #00aaff;
+	border-top: none;
+	list-style: none outside none;
+	text-align: center;
+	height: 30px;
+	padding: 5px 0;
+}
+ul.menu li:first-child{
+	border-left: none;
+	border-radius: 5px 0 0 0;
+}
+ul.menu li:last-child{
+	border-right: none;
+	border-radius: 0 5px 0 0;
+}
+ul.menu li.active {
+	font-weight: bold;
+	background-color: #00283B;
+	border-bottom: none;
+}
+
+.box .box-content {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+label {
+	display: inline-block
+}
+input {
+	box-shadow: 3px 3px 5px rgba(0,0,0,0.7);
+	margin: 0;
+}
+input.small, .box input.small {
+	width: 35px;
+}
+input.ng-invalid {
+	border: 2px solid red;
+}
+
+
+.slide.ng-hide-remove,
+.slide.ng-hide-add {
+	-webkit-transition: 0.5s linear all;
+	-moz-transition: 0.5s linear all;
+	-ms-transition: 0.5s linear all;
+	-o-transition: 0.5s linear all;
+	transition: 0.5s linear all;
+}
+     
+.slide.ng-hide-add.ng-hide-add-active,
+.slide.ng-hide-remove {
+	height: 0px;
+}
+ 
+.slide.ng-hide-remove.ng-hide-remove-active,
+.slide.ng-hide-add {
+	height: 170px;
+    overflow: hidden;
+}
+
+.slide.ng-hide-add, .slide.ng-hide-remove {
+    /* ensure visibility during the transition */
+    display: block !important; /* yes, important */
+}
+
+/* END SPECIFIC STYLES */
