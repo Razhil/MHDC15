@@ -1,0 +1,192 @@
+<div data-ng-controller="SWCtrl" class="col-xs-12">
+	<div class="row">
+		<div class="col-xs-6 box">
+			<ul class="row menu">
+				<li class="col-xs-4" data-ng-class="showInput=='items' ? 'active' : ''" data-ng-click="showInput='items'">Items</li>
+				<li class="col-xs-4" data-ng-class="showInput=='synergies' ? 'active' : ''" data-ng-click="showInput='synergies'">Synergies</li>
+				<li class="col-xs-4" data-ng-class="showInput=='skills' ? 'active' : ''" data-ng-click="showInput='skills'">Skills</li>
+			</ul>
+			<div class="box-content">
+				<div data-ng-show="showInput=='items'">
+					<div data-ng-repeat="item in hero.items" class="row" data-ng-class-even="'even'">
+						<div class="col-xs-4">
+							<span>{{item.slot}}</span>
+						</div>
+						<div class="col-xs-6">
+							<a href='{{item.link}}' target="_blank" data-ng-show="item.itemId">
+								<img src="http://marvelheroes.info/img/items/{{item.itemId}}.png" class="ipsIcon ibslink">
+							</a>
+							<span data-ng-show="!item.itemId">{{item.name}}</span>
+						</div>
+						<div class="col-xs-2">
+							<input type="button" value=">" data-ng-click="editItem(item)">
+						</div>
+					</div>
+				</div>
+				<div data-ng-show="showInput=='synergies'">
+					<div class="row center">
+						<span><strong>Total Active Synergies : {{hero.countActiveSynergies()}}</strong></span>
+					</div>
+					<div class="row">
+						<h3 class="col-xs-6 center">Hero</h3>
+						<h3 class="col-xs-2 center">X</h3>
+						<h3 class="col-xs-2 center">25</h3>
+						<h3 class="col-xs-2 center">50</h3>
+					</div>
+					<div data-ng-repeat="synergy in hero.synergies" class="row" data-ng-class-even="'even'">
+						<div class="col-xs-6">
+							<span>{{synergy.name}}</span>
+						</div>
+						<div class="col-xs-2">
+							<input type="radio" value="0" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+						</div>
+						<div class="col-xs-2">
+							<input type="radio" value="25" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+						</div>
+						<div class="col-xs-2">
+							<input type="radio" value="50" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+						</div>
+					</div>
+				</div>
+				<div data-ng-show="showInput=='skills'">
+					<h3 class="row col-xs-12">{{getStatLabel('tree1')}}</h3>
+					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree1'}" class="row" data-ng-class-even="'even'">
+						<div class="col-xs-9">
+							<span>{{skill.name}}</span>
+						</div>
+						<div class="col-xs-3 right">
+							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
+						</div>
+					</div>
+					<h3 class="row col-xs-12">{{getStatLabel('tree2')}}</h3>
+					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree2'}" class="row" data-ng-class-even="'even'">
+						<div class="col-xs-9">
+							<span>{{skill.name}}</span>
+						</div>
+						<div class="col-xs-3 right">
+							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
+						</div>
+					</div>
+					<h3 class="row col-xs-12">{{getStatLabel('tree3')}}</h3>
+					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree3'}" class="row" data-ng-class-even="'even'">
+						<div class="col-xs-9">
+							<span>{{skill.name}}</span>
+						</div>
+						<div class="col-xs-3 right">
+							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row box-content">
+				<div class="col-xs-12">
+					<input type="button" value="Save your profile" data-ng-click="updateDB(hero)">
+				</div>
+			</div>
+		</div>
+		<!--div class="col col3">
+			<item-box item="editingItem" stats="stats" skills="hero.skills" enchantments="enchantments" readonly="comparingItem" data-ng-show="editingItem"></item-box>
+			<item-box item="comparingItem" stats="stats" skills="hero.skills" enchantments="enchantments" data-ng-show="comparingItem"></item-box>
+			<input type="button" class="col col10" value="Compare" data-ng-click="compareItem(editingItem)" data-ng-show="editingItem && !comparingItem">
+			<input type="button" class="col col10" value="Close" data-ng-click="closeEdit()" data-ng-show="editingItem && !comparingItem">
+			<input type="button" class="col col10" value="Keep new item" data-ng-click="keepCompare()" data-ng-show="comparingItem">
+			<input type="button" class="col col10" value="Cancel compare" data-ng-click="cancelCompare()" data-ng-show="comparingItem">
+			<input type="button" class="col col10" value="Close" data-ng-click="closeCompare()" data-ng-show="comparingItem">
+		</div-->
+		<div class="col-xs-6 box">
+			<ul class="row menu">
+				<li class="col-xs-6" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="showInfo='skills'">Skills</li>
+				<li class="col-xs-6" data-ng-class="showInfo=='stats' ? 'active' : ''" data-ng-click="showInfo='stats'">Stats</li>
+			</ul>
+			<div data-ng-show="showInfo=='skills'">
+				<div data-ng-repeat="skill in hero.skills | filter: skillLvlFilter" class="row" data-ng-class-even="'even'">
+					<div>
+						<div class="col-xs-9">
+							<span>{{skill.name}}</span>
+						</div>
+						<div class="col-xs-3 right">							
+							<div>Lvl {{skill.totalLvl()}}</div>								
+						</div>
+					</div>
+					<div class="row clickable" data-ng-repeat="effect in skill.getActiveEffects()" data-ng-click="showEffectDetails(effect)">
+						<div class="col-xs-1">
+							<span data-ng-show="effectDetails != effect">+</span>
+							<span data-ng-show="effectDetails == effect">-</span>
+						</div>
+						<div class="col-xs-3">
+							<span>{{effect.name}}</span>
+						</div>
+						<div class="right" data-ng-class="(comparingItem ? 'col-xs-6' : 'col-xs-8 bold')">
+							<span>{{effect.dps() | number:2}} DPS</span>
+						</div>
+						<div class="col-xs-2 bold right" data-ng-show="comparingItem && skill.dps() > 0">
+							<span>{{skill.comparison()*100 | number:2}}%</span>
+						</div>
+						<div class="slide" data-ng-show="effectDetails == effect">
+							<div class="row">
+								<div class="col-xs-offset-1 col-xs-5">
+									<span>Avg Damage</span>
+								</div>
+								<div class="col-xs-6 center">
+									<span>{{effect.dmg() | number:2}}</span>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-offset-1 col-xs-5">
+									<span>Hit/Sec</span>
+								</div>
+								<div class="col-xs-6 center">
+									<span>{{effect.AS() | number:1}}</span>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-offset-1 col-xs-5">
+									<span>Critical</span>
+								</div>
+								<div class="col-xs-6 center">
+									<div>{{effect.critRat_Fact()*100 | number:2}}%</div>
+									<div>{{effect.critDmg_Fact()*100 | number:2}}%</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-offset-1 col-xs-5">
+									<span>Brutal</span>
+								</div>
+								<div class="col-xs-6 center">
+									<div>{{effect.brutRat_Fact()*100 | number:2}}%</div>
+									<div>{{effect.brutDmg_Fact()*100 | number:2}}%</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row" data-ng-repeat="effect in skill.getPassiveEffects() | filter: {scope: '!S'}">
+						<div class="col-xs-1">
+							<input type="checkbox" data-ng-model="effect.buffEnabled" data-ng-show="effect.isBuff()">
+						</div>
+						<div class="col-xs-11">
+							<span>{{getStatLabel(effect.stat.name)}}</span> : <span>+ {{effect.getStatValue(effect.stat.name, false) | number:1}}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div data-ng-show="showInfo=='stats'">
+				<div class="row" data-ng-repeat="stat in stats" data-ng-class-even="'even'">
+					<div class="col-xs-6">
+						<span>{{getStatLabel(stat)}}</span>
+					</div>
+					<div class="col-xs-2 right" data-ng-hide="stat == 'AS'">
+						<span>{{hero.getTotalStat(stat) | number:0}}</span>
+					</div>
+					<div class="col-xs-2 right" data-ng-show="stat == 'AS'">
+						<span>{{hero.getTotalStat(stat) | number:2}}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--div style="display:none;">
+		<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+		<form method="post" action="https://script.google.com/macros/s/AKfycbwyQGyPTBEqkwuEQKRcYq1YHDqfgSRuBUHoBS_xu8ZeRRUQBEw/exec" 
+			name="theForm" id="theForm" target="hidden_iframe" enctype='application/json' style="display:none;"></form>
+	</div-->
+</div>
