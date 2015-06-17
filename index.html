@@ -6,7 +6,7 @@
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-route.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
 		<script type="text/javascript" src="MHDC15_SW.js"></script>
-		<script type="text/javascript" src="MHDC.js"></script>
+		<script type="text/javascript" src="MHDC15_Services.js"></script>
 		<script type="text/javascript" src="MHDC_Model.js"></script>
 		<script type="text/javascript" src="MHDC_Lib.js"></script>
 		<script type="text/javascript" src="MHDC_Details.js"></script>		
@@ -14,19 +14,9 @@
 		<link rel="stylesheet" type="text/css" href="MHDC15.css">
 	</head>
 	<body>
-		<div class="container-fluid main" data-ng-controller="MainCtrl">
+		<div class="container-fluid main">
 			<div class="row menu_top">
 				<h1 class="col-xs-6">MHDC 2015</h1>
-				<!--div class="col-xs-6 right">	
-					<div data-ng-show="!currentUser">
-						<input type="text" data-ng-model="username" placeholder="Username">
-						<input type="button" data-ng-click="login()" value="Login">
-					</div>
-					<div data-ng-show="currentUser">
-						Username : {{currentUser}}
-						<input type="button" data-ng-click="reload()" value="Reload your profile" data-ng-show="heroName && state=='Advanced'">
-					</div>
-				</div-->
 			</div>
 			<div class="row content">
 				<div data-ng-view></div>

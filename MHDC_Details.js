@@ -1,4 +1,13 @@
 angular.module('MHDC15App')
+.factory('CalculationService', function() {
+	var getTotalLvl = function(skill, hero) {
+		return (skill.lvl > 0 ? skill.lvl + hero.getStatFromItems(skill.tree) + hero.getSkillBonus(skill) : 0);
+	}
+	
+	return {
+		getTotalLvl : getTotalLvl
+	}
+})
 .controller('DetailsCalculatorCtrl', function ($rootScope, $scope, $http, $q) {
 	/* INIT */
 	$scope.Math = window.Math;

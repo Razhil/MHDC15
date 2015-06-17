@@ -239,8 +239,7 @@ function SkillBonus(skillName, value) {
 	this.value = value;
 }
 
-function Skill(hero, name, lvl, tree) {
-	this.hero = hero;
+function Skill(name, lvl, tree) {
 	this.name = name;
 	this.lvl = lvl;
 	this.tree = tree;
@@ -256,9 +255,10 @@ function Skill(hero, name, lvl, tree) {
 		return hasActive;
 	}
 	
-	this.totalLvl = function() {
-		return (this.lvl > 0 ? this.lvl + this.hero.getStatFromItems(this.tree) + this.hero.getSkillBonus(this) : 0);
+	this.totalLvl = function(hero) {
+		return (this.lvl > 0 ? this.lvl + hero.getStatFromItems(this.tree) + hero.getSkillBonus(this) : 0);
 	}
+	
 	this.dps = function() {
 		var skill = this;
 		var total = 0;

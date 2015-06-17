@@ -110,7 +110,7 @@ input {
 	margin: 0;
 }
 input.small, .box input.small {
-	width: 35px;
+	min-width: 40px;
 }
 input.ng-invalid {
 	border: 2px solid red;
