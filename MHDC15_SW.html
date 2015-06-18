@@ -1,10 +1,11 @@
 <div class="col-xs-12">
 	<div class="row">
-		<div class="col-xs-6 box">
+		<div class="col-xs-12 box">
 			<ul class="row menu">
-				<li class="col-xs-4" data-ng-class="showInput=='items' ? 'active' : ''" data-ng-click="showInput='items'">Items</li>
-				<li class="col-xs-4" data-ng-class="showInput=='synergies' ? 'active' : ''" data-ng-click="showInput='synergies'">Synergies</li>
-				<li class="col-xs-4" data-ng-class="showInput=='skills' ? 'active' : ''" data-ng-click="showInput='skills'">Skills</li>
+				<li class="col-xs-3" data-ng-class="showInput=='items' ? 'active' : ''" data-ng-click="showInput='items'">Items</li>
+				<li class="col-xs-3" data-ng-class="showInput=='synergies' ? 'active' : ''" data-ng-click="showInput='synergies'">Synergies</li>
+				<li class="col-xs-3" data-ng-class="showInput=='skills' ? 'active' : ''" data-ng-click="showInput='skills'">Skills</li>
+				<li class="col-xs-3" data-ng-class="showInput=='omega' ? 'active' : ''" data-ng-click="showInput='omega'">Omega</li>
 			</ul>
 			<div class="box-content">
 				<div data-ng-show="showInput=='items'">
@@ -28,54 +29,69 @@
 						<span><strong>Total Active Synergies : {{hero.countActiveSynergies()}}</strong></span>
 					</div>
 					<div class="row">
-						<h3 class="col-xs-6 center">Hero</h3>
+						<h3 class="col-xs-6 col-md-2 center">Hero</h3>
 						<h3 class="col-xs-2 center">X</h3>
-						<h3 class="col-xs-2 center">25</h3>
-						<h3 class="col-xs-2 center">50</h3>
+						<h3 class="col-xs-2 col-md-4 center">25</h3>
+						<h3 class="col-xs-2 col-md-4 center">50</h3>
 					</div>
 					<div data-ng-repeat="synergy in hero.synergies" class="row" data-ng-class-even="'even'">
-						<div class="col-xs-6">
+						<div class="col-xs-6 col-md-2">
 							<span>{{synergy.name}}</span>
 						</div>
 						<div class="col-xs-2">
 							<input type="radio" value="0" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
 						</div>
-						<div class="col-xs-2">
-							<input type="radio" value="25" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+						<div class="col-xs-2 col-md-4">
+							<label>
+								<input type="radio" value="25" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+								<span data-ng-if="synergy.lvl25Stat.name">+ {{synergy.lvl25Stat.value}} {{synergy.lvl25Stat.name}}</span>
+							</label>
 						</div>
-						<div class="col-xs-2">
-							<input type="radio" value="50" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+						<div class="col-xs-2 col-md-4">
+							<label>
+								<input type="radio" value="50" data-ng-model="synergy.lvl" data-ng-disabled="hero.countActiveSynergies() >= 10 && !synergy.isActive()">
+								<span data-ng-if="synergy.lvl50Stat.name">+ {{synergy.lvl50Stat.value}} {{synergy.lvl50Stat.name}}</span>
+							</label>
 						</div>
 					</div>
 				</div>
-				<div data-ng-show="showInput=='skills'">
-					<h3 class="row col-xs-12">Decimation</h3>
-					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree1'}" class="row" data-ng-class-even="'even'">
-						<div class="col-xs-10">
-							<span>{{skill.name}}</span>
-						</div>
-						<div class="col-xs-2 right">
-							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
-						</div>
-					</div>
-					<h3 class="row col-xs-12">Negation</h3>
-					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree2'}" class="row" data-ng-class-even="'even'">
-						<div class="col-xs-10">
-							<span>{{skill.name}}</span>
-						</div>
-						<div class="col-xs-2 right">
-							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
+				<div class="row" data-ng-show="showInput=='skills'">
+					<div class="col-xs-12 col-md-4">
+						<h3 class="row center col-xs-12">Decimation</h3>
+						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree1'}" class="row" data-ng-class-even="'even'">
+							<div class="col-xs-8">
+								<span>{{skill.name}}</span>
+							</div>
+							<div class="col-xs-4 right">
+								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center"></input>
+							</div>
 						</div>
 					</div>
-					<h3 class="row col-xs-12">Disruption</h3>
-					<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree3'}" class="row" data-ng-class-even="'even'">
-						<div class="col-xs-10">
-							<span>{{skill.name}}</span>
-						</div>
-						<div class="col-xs-2 right">
-							<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small"></input>
+					<div class="col-xs-12 col-md-4">
+						<h3 class="row center col-xs-12">Negation</h3>
+						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree2'}" class="row" data-ng-class-even="'even'">
+							<div class="col-xs-8">
+								<span>{{skill.name}}</span>
+							</div>
+							<div class="col-xs-4 right">
+								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center"></input>
+							</div>
 						</div>
 					</div>
+					<div class="col-xs-12 col-md-4">
+						<h3 class="row center col-xs-12">Disruption</h3>
+						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree3'}" class="row" data-ng-class-even="'even'">
+							<div class="col-xs-8">
+								<span>{{skill.name}}</span>
+							</div>
+							<div class="col-xs-4 right">
+								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center"></input>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div data-ng-show="showInput=='omega'">
+					TODO !
 				</div>
 			</div>
 			<div class="row box-content">
@@ -93,7 +109,7 @@
 			<input type="button" class="col col10" value="Cancel compare" data-ng-click="cancelCompare()" data-ng-show="comparingItem">
 			<input type="button" class="col col10" value="Close" data-ng-click="closeCompare()" data-ng-show="comparingItem">
 		</div-->
-		<div class="col-xs-6 box">
+		<div class="col-xs-12 box">
 			<ul class="row menu">
 				<li class="col-xs-6" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="showInfo='skills'">Skills</li>
 				<li class="col-xs-6" data-ng-class="showInfo=='stats' ? 'active' : ''" data-ng-click="showInfo='stats'">Stats</li>
