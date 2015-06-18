@@ -31,4 +31,10 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	$scope.hero = new Hero("SW");
 	$scope.hero.synergies = angular.copy(heroesSynergies);
 	$scope.hero.skills = angular.copy(heroSkills);
+})
+.factory('HeroService', function() {
+	var hero;
+	return {
+		hero: hero;
+	};
 });
