@@ -30,6 +30,9 @@ input {
 	color: #333333;
 	width: 100%;
 }
+label input[type="radio"] {
+	width: auto;
+}
 select {
 	max-width: 100%;
 }
