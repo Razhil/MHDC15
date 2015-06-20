@@ -14,12 +14,16 @@
 		<link rel="stylesheet" type="text/css" href="MHDC15.css">
 	</head>
 	<body>
-		<div class="container-fluid main">
+		<div class="container-fluid main" data-ng-controller="MainCtrl">
 			<div class="row menu_top">
 				<h1 class="col-xs-6">MHDC 2015</h1>
 			</div>
+			
 			<div class="row content">
-				<div data-ng-view></div>
+				<div class="col-xs-12 center" data-ng-show="isViewLoading">
+					<img src="loading.gif" width="100px">
+				</div>
+				<div data-ng-view data-ng-show="!isViewLoading"></div>
 			</div>
 		</div>
 	</body>

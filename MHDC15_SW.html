@@ -114,9 +114,9 @@
 				<li class="col-xs-6" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="showInfo='skills'">Skills</li>
 				<li class="col-xs-6" data-ng-class="showInfo=='stats' ? 'active' : ''" data-ng-click="showInfo='stats'">Stats</li>
 			</ul>
-			<div data-ng-show="showInfo=='skills'">
-				<div data-ng-repeat="skill in hero.skills | filter: skillLvlFilter" class="row" data-ng-class-even="'even'">
-					<div>
+			<div class="box-content" data-ng-show="showInfo=='skills'">
+				<div data-ng-repeat="skill in hero.skills | filter: skillLvlFilter" data-ng-class-even="'even'">
+					<div class="row">
 						<div class="col-xs-9">
 							<span>{{skill.name}}</span>
 						</div>
@@ -124,7 +124,7 @@
 							<div>Lvl {{skill.totalLvl(hero)}}</div>								
 						</div>
 					</div>
-					<!--div class="row clickable" data-ng-repeat="effect in skill.getActiveEffects()" data-ng-click="showEffectDetails(effect)">
+					<div class="row clickable" data-ng-repeat="effect in skill.getActiveEffects()" data-ng-click="showEffectDetails(effect)">
 						<div class="col-xs-1">
 							<span data-ng-show="effectDetails != effect">+</span>
 							<span data-ng-show="effectDetails == effect">-</span>
@@ -174,15 +174,15 @@
 								</div>
 							</div>
 						</div>
-					</div-->
-					<!--div class="row" data-ng-repeat="effect in skill.getPassiveEffects() | filter: {scope: '!S'}">
+					</div>
+					<div class="row" data-ng-repeat="effect in skill.getPassiveEffects() | filter: {scope: '!S'}">
 						<div class="col-xs-1">
 							<input type="checkbox" data-ng-model="effect.buffEnabled" data-ng-show="effect.isBuff()">
 						</div>
 						<div class="col-xs-11">
 							<span>{{getStatLabel(effect.stat.name)}}</span> : <span>+ {{effect.getStatValue(effect.stat.name, false) | number:1}}</span>
 						</div>
-					</div-->
+					</div>
 				</div>
 			</div>
 			<div data-ng-show="showInfo=='stats'">

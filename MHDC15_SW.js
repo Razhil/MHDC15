@@ -3,38 +3,43 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	$routeProvider
 	.when('/', {
 		templateUrl: 'MHDC15.html',
-		controller: 'MainCtrl'
+		controller: 'ErrorCtrl'
 	})
 	.when('/hero/:heroName', {
 		templateUrl: 'MHDC15_SW.html',
 		controller: 'SWCtrl',
 		resolve: {
-			heroesBaseStats: function (excelService) {
-				return excelService.loadHeroesStats();
+			loadHeroStats: function ($route, excelService) {
+				return excelService.loadHeroStats($route.current.params.heroName);
 			},
-			heroesSynergies: function (excelService) {
-				return excelService.loadHeroesSynergies();
+			loadHeroSynergies: function (excelService) {
+				return excelService.loadHeroSynergies();
 			},
-			heroSkills: function(excelService, $route) {
+			loadHeroSkills: function($route, excelService) {
 				return excelService.loadHeroSkills($route.current.params.heroName);
 			}
 		}
 	})
 	.otherwise({redirectTo:'/'});
 }])
-.controller('SWCtrl', function ($scope, CalculationService, heroesBaseStats, heroesSynergies, heroSkills) {
+.controller('MainCtrl', function ($scope, $rootScope) {
+	$scope.isViewLoading = false;
+
+	$rootScope.$on('$routeChangeStart', function(){
+		$scope.isViewLoading = true;
+	});
+	$rootScope.$on('$routeChangeSuccess', function(){
+		$scope.isViewLoading = false;
+	});
+	$rootScope.$on('$routeChangeError', function() {
+		$scope.isViewLoading = false;
+	});
+})
+.controller('SWCtrl', function ($scope, $hero) {
 	/* Default view state */
 	$scope.showInput = "items";
 	$scope.showInfo = "skills";
 		
 	/* Init model */
-	$scope.hero = new Hero("SW");
-	$scope.hero.synergies = angular.copy(heroesSynergies);
-	$scope.hero.skills = angular.copy(heroSkills);
+	$scope.hero = $hero;
 })
-.factory('HeroService', function() {
-	var hero;
-	return {
-		hero: hero;
-	};
-});
