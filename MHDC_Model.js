@@ -4,6 +4,11 @@ var slots = ["Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Art1", "Art2", "Art3"
 angular.module('MHDC15App')
 .factory('$hero', function () {
 	var hero = new Hero();
+	hero.name = "SW";
+	
+	/* To be moved */
+	var enchantments = InitEnchantments();
+	
 	return hero;
 	
 	function Hero() {
@@ -553,6 +558,28 @@ angular.module('MHDC15App')
 			};
 			return value;
 		}
+		
+		this.addStat = function(statName, statValue) {
+			this.stats.push(new Stat(statName, statValue));
+		}
+		this.addProc = function(procChance, procDamage) {
+			this.procs.push(new Proc(procChance, procDamage));
+		}
+		this.addSkillBonus = function(skillName, value) {
+			this.skillBonuses.push(new SkillBonus(skillName, value));
+		}
+		this.setEnchantment = function(name) {
+			this.enchantment = findEnchantment(name);
+		}
+		this.getPossibleEnchantments = function() {
+			var result = [];
+			enchantments.forEach(function(enchantment) {
+				if (enchantment.slots.indexOf(this.slot) > -1){
+					result.push(enchantment);
+				}
+			});
+			return result;
+		};
 	}
 
 	function Stat(name, value) {
@@ -586,4 +613,73 @@ angular.module('MHDC15App')
 		this.stats = [];
 	}
 
+	/* To be moved to a DB */
+	function InitEnchantments() {
+		var enchantments = [];
+		
+		/* Blessings (Artifacts) */
+		var enchantment = new Enchantment("Odin", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Loki", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Frigga", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("SIF", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("AS", 2));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Balder", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Heimdall", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Fandral", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("critRat", 100));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Hogun", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("dmgRat_melee_pc", 3));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Volstagg", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Hela", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("brutRat_pc", 5));
+		enchantments.push(enchantment);
+		
+		/* Small enchants (Slot 1-5) */
+		enchantment = new Enchantment("+ Dmg Physical", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_physical", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Energy", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_energy", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Mental", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_mental", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Melee", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_melee", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Ranged", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_ranged", 50));
+		enchantments.push(enchantment);	
+		enchantment = new Enchantment("+ Dmg Area", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_area", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Critical Rating", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("critRat", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Spirit", ["Slot2", "Slot3", "Slot4"]);
+		enchantment.stats.push(new Stat("spirit", 20));
+		enchantments.push(enchantment);
+		
+		return enchantments;
+	}
+	
+	function findEnchantment(name) {
+		var result = null;
+		enchantments.forEach(function(enchantment) {
+			if (enchantment.name == name) {
+				result = enchantment;
+			}
+		});
+		return result;
+	}
+	
 })

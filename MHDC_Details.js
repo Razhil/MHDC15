@@ -218,64 +218,6 @@ angular.module('MHDC15App')
 	}
 	
 	/* DATABASE */
-	var loadHeroFromDB = function() {
-		if ($scope.currentUser) {
-			url = "https://spreadsheets.google.com/feeds/list/1n1i4GvdwohX3pwR3z9pQEGwrcsdev3l3YCn4ky11dP4/od6/public/full?alt=json&sq=user%3D"+$scope.currentUser+"%20and%20heroname%3D"+$scope.heroName;
-			$http.get(url)
-			.success(function(resp) {
-				if (resp.feed.openSearch$totalResults.$t > 0) {
-					resp.feed.entry.forEach(function(entry) {
-						var slot = entry.gsx$slot.$t;
-						if (slot == "Synergies") {
-							var synergies = JSON.parse(entry.gsx$name.$t);
-							synergies.forEach(function(synergy) {
-								$scope.hero.setSynergyLevel(synergy.name, synergy.lvl);
-							});
-						} else if (slot == "Skills") {
-							var skills = JSON.parse(entry.gsx$name.$t);
-							skills.forEach(function(skill) {
-								$scope.hero.setSkillLevel(skill.name, skill.lvl);
-							});
-						} else {
-							var loadedItem = JSON.parse(entry.gsx$name.$t);
-							var item = $scope.hero.getItemBySlot(loadedItem.slot);
-							item.name = loadedItem.name;
-							loadedItem.stats.forEach(function(stat) {
-								item.stats.push(new Stat(stat.name, stat.value));
-							});
-							loadedItem.procs.forEach(function(proc) {
-								item.procs.push(new Proc(proc.chance, proc.damage));
-							});
-							loadedItem.skillBonuses.forEach(function(skillBonus) {
-								item.skillBonuses.push(new SkillBonus(skillBonus.skillName, skillBonus.value));
-							});
-							if (loadedItem.enchantment) {
-								item.enchantment = findEnchantment(loadedItem.enchantment.name);
-							}
-							if (loadedItem.itemId) {
-								$http.get("https://spreadsheets.google.com/feeds/list/1-NVwOqkajupPMSK7UbeP7HcDqy_T6aSEs6_v1iv3MrI/od6/public/full?alt=json&sq=id%3D"+loadedItem.itemId)
-								.success(function(resp) {
-									if (resp.feed.openSearch$totalResults.$t > 0) {
-										item.itemId = loadedItem.itemId;
-										item.name = resp.feed.entry[0].gsx$name.$t;
-										item.link = resp.feed.entry[0].gsx$link.$t;
-										item.link = item.link.replace(/\{(.*?)\}/g, function(s, m1) {return item.getStat(m1);});
-										IB_Init();
-									}
-								});
-							}
-						}
-					});
-				}
-			})
-			.error(function(resp) {
-				alert("Failed to load data : " + resp);
-			});
-		} else {
-			alert("Error. Cannot load from DB, no user name provided.");		
-		}
-	}
-	
 	function cleanForm() {
 		while (theForm.firstChild) {
 			theForm.removeChild(theForm.firstChild);
