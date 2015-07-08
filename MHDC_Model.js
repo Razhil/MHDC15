@@ -136,6 +136,16 @@ angular.module('MHDC15App')
 			return result;
 		};
 		
+		this.getSkillByPrio = function(prio) {
+			var result = null;
+			this.skills.forEach(function(skill) {
+				if (skill.prio == prio) {
+					result = skill;
+				}
+			});
+			return result;
+		};
+		
 		this.getSkillBonus = function(skill) {
 			var total = 0;
 			this.items.forEach(function(item) {
