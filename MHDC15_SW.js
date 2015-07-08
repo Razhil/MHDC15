@@ -15,8 +15,8 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 			loadHeroSynergies: function (excelService) {
 				return excelService.loadHeroSynergies();
 			},
-			loadHeroSkills: function($route, excelService) {
-				return excelService.loadHeroSkills($route.current.params.heroName);
+			loadHeroSkills: function($route, dataService) {
+				return dataService.loadHeroSkills($route.current.params.heroName);
 			}
 		}
 	})
@@ -69,5 +69,39 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		} else {
 			return stat;
 		}
+	}
+	
+	$scope.calcTTK = function(dummyHP) {
+		var duration = 0;
+		var currentEffect = [];
+		
+		while (duration < 10) {
+			var prio = 1;
+			var didSomething = false;
+			while (prio < 3 && didSomething == false) {
+				var skill = $scope.hero.getSkillByPrio(prio);
+				if (skill && (!currentEffect.contains(skill) || currentEffect.get(skill) < duration)) {
+					if (currentEffect.contains(skill) {
+						currentEffect.remove(skill);
+					}
+					for (activeEffect in skill.getActiveEffects()) {
+						if (activeEffect.isDot()) {
+							var skillDuration = 3;
+							var as = 0.5;
+							
+							duration += as;
+							currentEffect.push(skill, duration+skillDuration);
+							didSomething = true;
+						} else {
+							duration += skill.as;
+							didSomething = true;
+						}
+					}
+				} else {
+					prio++;
+				}
+			}
+		}
+		return dummyHP/1;
 	}
 })

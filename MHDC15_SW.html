@@ -14,9 +14,6 @@
 							<span>{{item.slot}}</span>
 						</div>
 						<div class="col-xs-6">
-							<!--a href='{{item.link}}' target="_blank" data-ng-show="item.itemId">
-								<img src="http://marvelheroes.info/img/items/{{item.itemId}}.png" class="ipsIcon ibslink">
-							</a-->
 							<span data-ng-show="!item.itemId">{{item.name}}</span>
 						</div>
 						<div class="col-xs-2">
@@ -103,13 +100,6 @@
 		<div class="col-xs-6" data-ng-show="editingItem">
 			<div data-item-box item="editingItem" stats="stats" skills="hero.skills" enchantments="enchantments" readonly="comparingItem" data-ng-show="editingItem"></div>
 		</div>
-			<!--item-box item="comparingItem" stats="stats" skills="hero.skills" enchantments="enchantments" data-ng-show="comparingItem"></item-box>
-			<input type="button" class="col-xs-12" value="Compare" data-ng-click="compareItem(editingItem)" data-ng-show="editingItem && !comparingItem">
-			<input type="button" class="col-xs-12" value="Close" data-ng-click="closeEdit()" data-ng-show="editingItem && !comparingItem">
-			<input type="button" class="col-xs-12" value="Keep new item" data-ng-click="keepCompare()" data-ng-show="comparingItem">
-			<input type="button" class="col-xs-12" value="Cancel compare" data-ng-click="cancelCompare()" data-ng-show="comparingItem">
-			<input type="button" class="col-xs-12" value="Close" data-ng-click="closeCompare()" data-ng-show="comparingItem">
-		</div-->
 		<div class="col-xs-12 box">
 			<ul class="row menu">
 				<li class="col-xs-6" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="showInfo='skills'">Skills</li>
@@ -118,17 +108,23 @@
 			<div class="box-content" data-ng-show="showInfo=='skills'">
 				<div data-ng-repeat="skill in hero.skills | filter: skillLvlFilter" data-ng-class-even="'even'">
 					<div class="row">
-						<div class="col-xs-9">
+						<div class="col-xs-6">
 							<span>{{skill.name}}</span>
 						</div>
-						<div class="col-xs-3 right">							
-							<div>Lvl {{skill.totalLvl(hero)}}</div>								
+						<div class="col-xs-2 right">
+							<div>Prio</div>
+						</div>
+						<div class="col-xs-1">
+							<input type="number" data-ng-model="skill.prio">
+						</div>
+						<div class="col-xs-3 right">
+							<div>Lvl {{skill.totalLvl(hero)}}</div>
 						</div>
 					</div>
-					<div class="row clickable" data-ng-repeat="effect in skill.getActiveEffects()" data-ng-click="showEffectDetails(effect)">
+					<div class="row clickable" data-ng-repeat="effect in skill.getActiveEffects()" data-ng-click="showDetails = !showDetails">
 						<div class="col-xs-1">
-							<span data-ng-show="effectDetails != effect">+</span>
-							<span data-ng-show="effectDetails == effect">-</span>
+							<span data-ng-show="!showDetails">+</span>
+							<span data-ng-show="showDetails">-</span>
 						</div>
 						<div class="col-xs-3">
 							<span>{{effect.name}}</span>
@@ -139,7 +135,7 @@
 						<div class="col-xs-2 bold right" data-ng-show="comparingItem && skill.dps() > 0">
 							<span>{{skill.comparison()*100 | number:2}}%</span>
 						</div>
-						<div class="slide" data-ng-show="effectDetails == effect">
+						<div class="slide" data-ng-show="showDetails">
 							<div class="row">
 								<div class="col-xs-offset-1 col-xs-5">
 									<span>Avg Damage</span>
@@ -199,6 +195,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="col-xs-12 box">
+			<div>Time to kill a 500K HP Dummy using the skills following "prio" order : </div>
+			<div>{{calcTTK(500000)}} seconds</div>
 		</div>
 	</div>
 	<!--div style="display:none;">
