@@ -1,43 +1,4 @@
 angular.module('MHDC15App')
-.factory('dataService', function($http, $hero) {
-	var loadHeroSkills = function(heroName) {
-		return $http.get("Skills_"+heroName+".json").then(
-			function(resp) {
-				if (resp.data.length > 0) {
-					resp.data.forEach(function(entry) {
-						var skill;
-						$hero.skills.forEach(function(heroSkill) {
-							if (heroSkill.name == entry.skillname) {
-								skill = heroSkill;
-							}
-						});
-						if (!skill) {
-							skill = $hero.addSkill(entry.skillname, 20, entry.tree, []);
-						}
-						
-						if (entry.effect == "Active") {
-							skill.addActiveEffect((entry.effectname ? entry.effectname : 'Attack'), parseFloat(entry.lvl1mindmg), parseFloat(entry.lvl1maxdmg), 
-								parseFloat(entry.baseas), parseFloat(entry.procrate), entry.damagetype, entry.proximity, entry.extratags);
-						} else if (entry.effect == "Passive") {
-							skill.addPassiveEffect(entry.statname, parseFloat(entry.statvalue), entry.statscope);
-						} else if (entry.effect == "Special") {
-							skill.addSpecialEffect(entry.statname, entry.statname, entry.statscope);
-						}
-					});
-					return "OK";
-				}
-			},
-			function(resp) {
-				alert("Failed to load data : " + resp);
-				return [];
-			}
-		);
-	}
-	
-	return {
-		loadHeroSkills : loadHeroSkills
-	};
-})
 .factory('excelService', function($http, $hero) {
 	var loadHeroStats = function(heroName) {
 		url = "https://spreadsheets.google.com/feeds/list/1pNRoV5zKlGfvh4WKO8_TbU2c_7SRQkj4tXPYrr0pZhE/od6/public/full?alt=json&sq=hero%3D"+heroName;

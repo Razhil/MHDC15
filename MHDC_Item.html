@@ -4,19 +4,17 @@
 			<span class="col-xs-8">Slot</span>
 			<span class="col-xs-4">{{item.slot}}</span>
 		</div>
-		<div class="row">
-            <div class="col-xs-12">
-				<input id="name" type="text" data-ng-model="item.name" placeholder="Name" data-ng-disabled="readonly"></input>
-			</div>
+		<div class="row col-xs-12">
+			<input id="name" type="text" data-ng-model="item.name" placeholder="Name" data-ng-disabled="readonly"></input>
 		</div>
 		<div data-ng-repeat="stat in item.stats" class="row">
-			<div class="col-xs-6">
+			<div class="col-xs-8">
 				<select data-ng-model="stat.name" data-ng-options="stat as getStatLabel(stat) for stat in stats" data-ng-disabled="readonly"></select>
 			</div>
-			<div class="col-xs-4">
+			<div class="col-xs-3">
 				<input type="number" min="0" data-ng-model="stat.value" data-ng-disabled="readonly"></input>
 			</div>
-			<div class="col-xs-2">
+			<div class="col-xs-1">
 				<input type="button" value="X" data-ng-click="deleteStat(item, stat)" data-ng-disabled="readonly">
 			</div>
 		</div>
@@ -62,11 +60,6 @@
 			</div>
 			<div class="col-xs-4">
 				<input type="button" value="+ skill" data-ng-click="addSkillBonus(item)" data-ng-disabled="readonly || item.skillBonuses.length >= 3">
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<input type="button" value="Close" data-ng-click="closeEdit()">
 			</div>
 		</div>
 	</div>

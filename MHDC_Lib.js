@@ -55,9 +55,6 @@ angular.module('MHDCLib', [])
 					return stat;
 				}
 			};
-			$scope.closeEdit = function() {
-				$scope.item = null;
-			}
 		},
 		templateUrl: 'MHDC_Item.html'
     };
