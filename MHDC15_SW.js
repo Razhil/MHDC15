@@ -72,36 +72,75 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	}
 	
 	$scope.calcTTK = function(dummyHP) {
-		var duration = 0;
-		var currentEffect = [];
+		var currentTime = 0;
+		var nextAction = 0;
+		var totalDamage = 0;
+		var currentEffects = [];
+		//var castingOrder = "";
 		
-		while (duration < 10) {
+		while (currentTime < 10 && totalDamage < dummyHP) {
 			var prio = 1;
 			var didSomething = false;
-			while (prio < 3 && didSomething == false) {
-				var skill = $scope.hero.getSkillByPrio(prio);
-				if (skill && (!currentEffect.contains(skill) || currentEffect.get(skill) < duration)) {
-					if (currentEffect.contains(skill) {
-						currentEffect.remove(skill);
-					}
-					for (activeEffect in skill.getActiveEffects()) {
-						if (activeEffect.isDot()) {
-							var skillDuration = 3;
-							var as = 0.5;
-							
-							duration += as;
-							currentEffect.push(skill, duration+skillDuration);
-							didSomething = true;
-						} else {
-							duration += skill.as;
-							didSomething = true;
+			
+			if (nextAction <= currentTime) {
+				while (prio <= 10 && didSomething == false) {
+					var skill = $scope.hero.getSkillByPrio(prio);
+					if (skill && (!(skill.name in currentEffects)  || currentEffects[skill.name].time <= currentTime)) {
+						if (skill.name in currentEffects) {
+							currentEffects[skill.name] = null;
 						}
+						skill.getActiveEffects().forEach(function(activeEffect) {
+							if (activeEffect.isDot()) {
+								var skillDuration = 3;
+								var as = 0.5;
+								
+								currentEffects[skill.name] = {time:currentTime+skillDuration, effect:activeEffect};
+								nextAction = currentTime + as;
+							} else {
+								var damage = activeEffect.dps()/activeEffect.AS();
+								totalDamage += damage;
+								//console.log("Hit " + damage + " dmg at " + currentTime + " sec.");
+								nextAction = currentTime + 1/activeEffect.AS();
+							}
+						});
+						//castingOrder += skill.name+" ("+currentTime+") "+"\r\n"
+						didSomething = true;
+					} else {
+						prio++;
 					}
-				} else {
-					prio++;
+				}
+				if (!didSomething) {
+					if (Object.keys(currentEffects).length > 0) {
+						var lowest = null;
+						Object.keys(currentEffects).forEach(function(key) {
+							if (!lowest || currentEffects[key].time < lowest) {
+								lowest = currentEffects[key].time;
+							}
+						});
+						nextAction = lowest;
+					} else {
+						break;
+					}
 				}
 			}
+			
+			if (currentTime % 0.5 == 0) {
+				Object.keys(currentEffects).forEach(function(key) {
+					var dot = currentEffects[key].effect;
+					var damage = dot.dps()/dot.AS();
+					totalDamage += damage;
+					//console.log("Tick " + damage + " dmg at " + currentTime + " sec.");
+				});
+			}
+			
+			currentTime = (currentTime * 100 + 1) /100;
 		}
-		return dummyHP/1;
+		//return castingOrder + " || " + totalDamage + " damage in 10 ";
+		
+		if (totalDamage < dummyHP) {
+			return "more than 10 seconds";
+		} else {
+			return Math.round(currentTime*100)/100 + " seconds";
+		}
 	}
 })
