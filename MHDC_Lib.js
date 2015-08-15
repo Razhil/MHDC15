@@ -10,7 +10,7 @@ angular.module('MHDCLib', [])
 		},
 		restrict: 'A',
 		replace: 'true',
-		controller : function($scope) {
+		controller : function($scope, $hero) {
 			$scope.statsLabel = ["Attack Speed", "Damage Rating", "Damage Rating (Physical)", "Damage Rating (Energy)", "Damage Rating (Mental)", "Damage Rating (Melee)", "Damage Rating (Ranged)", "Damage Rating (Area)", "Damage Rating (DoT)", "Summon Damage",
 						"Critical Rating", "Critical Rating (Physical)", "Critical Rating (Energy)", "Critical Rating (Mental)", "Critical Rating (Melee)", "Critical Rating (Ranged)", "Critical Rating (Area)", "Critical Damage Rating", "Brutal Rating", "Brutal Damage Rating", 
 						"Strength", "Fighting", "Speed", "Energy", "Intelligence", "Tree 1", "Tree 2", "Tree 3"];
@@ -55,8 +55,9 @@ angular.module('MHDCLib', [])
 					return stat;
 				}
 			};
-			$scope.closeEdit = function() {
-				$scope.item = null;
+			
+			$scope.recalculate = function() {
+				$hero.calculate();
 			}
 		},
 		templateUrl: 'MHDC_Item.html'

@@ -35,13 +35,14 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		$scope.isViewLoading = false;
 	});
 })
-.controller('SWCtrl', function ($scope, $hero, excelService) {
+.controller('SWCtrl', function ($scope, $hero, $items, excelService) {
 	/* Default view state */
 	$scope.showInput = "items";
 	$scope.showInfo = "skills";
 		
 	/* Init model */
 	$scope.hero = $hero;
+	$scope.items = $items.getAll();
 	excelService.loadPlayerHero("Razhil");
 	
 	$scope.skillLvlFilter = function(skill){
@@ -49,8 +50,35 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	}
 	
 	$scope.editItem = function(item) {
-		$scope.editingItem = item;
+		$scope.oldItem = item;
+		$scope.newItem = $items.createNewItem(item.slot, "");
+		
+		$scope.hero.skills.forEach(function(skill) {
+			if (skill.dps > 0) {
+				skill.oldDps = skill.dps;
+			}
+		});
+		
+		var index = $scope.items.indexOf(item);
+		$scope.items[index] = $scope.newItem;
+		$scope.hero.calculate();
+		
+		$scope.hero.skills.forEach(function(skill) {
+			if (skill.dps > 0) {
+				skill.comparison = function() {
+					return (skill.dps - skill.oldDps) /  skill.oldDps;
+				};
+			}
+		});
 	};
+	
+	$scope.cancelEdit = function() {
+		var index = $scope.items.indexOf($scope.newItem);
+		$scope.items[index] = $scope.oldItem;
+		
+		$scope.newItem = null;
+		$scope.hero.calculate();
+	}
 	
 	/* TO BE MOVED, there should be a better way of doing labeling */
 	$scope.stats = ["AS", "dmgRat", "dmgRat_physical", "dmgRat_energy", "dmgRat_mental", "dmgRat_melee", "dmgRat_ranged", "dmgRat_area", "dmgRat_dot", "dmgRat_summon",
@@ -78,7 +106,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		var currentEffects = [];
 		//var castingOrder = "";
 		
-		while (currentTime < 10 && totalDamage < dummyHP) {
+		while (currentTime < 60 && totalDamage < dummyHP) {
 			var prio = 1;
 			var didSomething = false;
 			
@@ -91,16 +119,15 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 						}
 						skill.getActiveEffects().forEach(function(activeEffect) {
 							if (activeEffect.isDot()) {
-								var skillDuration = 3;
 								var as = 0.5;
-								
-								currentEffects[skill.name] = {time:currentTime+skillDuration, effect:activeEffect};
+								//console.log("Cast DoT " + skill.name + " at " + currentTime + " sec.");
+								currentEffects[skill.name] = {time:currentTime+activeEffect.duration, effect:activeEffect};
 								nextAction = currentTime + as;
 							} else {
-								var damage = activeEffect.dps()/activeEffect.AS();
+								var damage = activeEffect.dps/activeEffect.AS;
 								totalDamage += damage;
 								//console.log("Hit " + damage + " dmg at " + currentTime + " sec.");
-								nextAction = currentTime + 1/activeEffect.AS();
+								nextAction = currentTime + 1/activeEffect.AS;
 							}
 						});
 						//castingOrder += skill.name+" ("+currentTime+") "+"\r\n"
@@ -118,27 +145,27 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 							}
 						});
 						nextAction = lowest;
-					} else {
+					}/* else {
 						break;
-					}
+					}*/
 				}
 			}
 			
 			if (currentTime % 0.5 == 0) {
 				Object.keys(currentEffects).forEach(function(key) {
 					var dot = currentEffects[key].effect;
-					var damage = dot.dps()/dot.AS();
+					var damage = dot.dps/2;
 					totalDamage += damage;
 					//console.log("Tick " + damage + " dmg at " + currentTime + " sec.");
 				});
 			}
 			
-			currentTime = (currentTime * 100 + 1) /100;
+			currentTime = Math.round(currentTime * 100 + 1)/100;
 		}
 		//return castingOrder + " || " + totalDamage + " damage in 10 ";
 		
 		if (totalDamage < dummyHP) {
-			return "more than 10 seconds";
+			return "more than 60 seconds";
 		} else {
 			return Math.round(currentTime*100)/100 + " seconds";
 		}

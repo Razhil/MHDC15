@@ -1,59 +1,167 @@
 var enemyLvl = 60;
-var slots = ["Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Art1", "Art2", "Art3", "Art4", "Medal", "Relic", "Ring", "Legendary", "Costume", "Insignia", "Uru", "Team-Up", "Omega"];
+var slots = ["Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Art1", "Art2", "Art3", "Art4", "Medal", "Relic", "Ring", "Legendary", "Costume", "Insignia", "Uru", "Team-Up"];
 
 angular.module('MHDC15App')
-.factory('$hero', function () {
-	var hero = new Hero();
-	hero.name = "SW";
-	
+.factory('$items', function() {
+	var items = [];
+	slots.forEach(function(slot) {
+		items.push(new Item(slot, ""));
+	});
+
 	/* To be moved */
 	var enchantments = InitEnchantments();
 	
-	return hero;
-	
-	function Hero() {
-		this.name;
-		this.baseStats = new Attributes();
-		var items = [];
-		this.items = items;
-		slots.forEach(function(slot) {
-			items.push(new Item(slot, ""));
-		});
-		this.skills = [];
-		this.synergies = [];
+	function Item(slot, name) {
+		this.slot = slot;
+		this.name = name;
+		this.stats = [];
+		this.procs = [];
+		this.skillBonuses = [];
+		this.enchantment = null;
 		
-		this.getTotalStat = function(statName, targetSkill) {
-			var total = 0;
-			total += this.getStatFromItems(statName);
-			total += this.getStatFromSkills(statName, targetSkill);
-			total += this.getSynergyBonus(statName);
-			if (statName == "AS") {
-				var AS = total + (this.baseStats.speed + this.getStatFromItems("speed")) * 1;
-				var AS_DR = 0.4 * (1 - Math.exp(-3*AS/100)) * 100;
-				
-				total = (AS < AS_DR ? AS : AS_DR);
-			}
-			if (statName == "critRat") {
-				total += (this.baseStats.intelligence + this.getStatFromItems("intelligence")) * 30;
-			}
-			if (statName == "critDmg") {
-				total += (this.baseStats.intelligence + this.getStatFromItems("intelligence")) * 90;
-			}
-			if (statName == "brutRat") {
-				total += (this.baseStats.fighting + this.getStatFromItems("fighting")) * 60;
-			}
-			if (statName == "brutDmg") {
-				total += (this.baseStats.fighting + this.getStatFromItems("fighting")) * 180;
-			}
-			if (statName == "spirit") {
-				total += (this.baseStats.intelligence + this.getStatFromItems("intelligence")) * 2;
-			}
-			return total;
+		this.getStat = function(statName) {
+			var value = 0;
+			for (var i = 0, len = this.stats.length;  i < len; i++) {
+				if (this.stats[i].name == statName) {
+					value = this.stats[i].value;
+					break;
+				}
+			};
+			return value;
+		}
+		
+		this.addStat = function(statName, statValue) {
+			this.stats.push(new Stat(statName, statValue));
+		}
+		this.addProc = function(procChance, procDamage) {
+			this.procs.push(new Proc(procChance, procDamage));
+		}
+		this.addSkillBonus = function(skillName, value) {
+			this.skillBonuses.push(new SkillBonus(skillName, value));
+		}
+		this.setEnchantment = function(name) {
+			this.enchantment = findEnchantment(name);
+		}
+		this.getPossibleEnchantments = function() {
+			var result = [];
+			enchantments.forEach(function(enchantment) {
+				if (enchantment.slots.indexOf(this.slot) > -1){
+					result.push(enchantment);
+				}
+			});
+			return result;
 		};
+	}
+	
+	function Stat(name, value) {
+		this.name = name;
+		this.value = value;
+	}
+
+	function Proc(chance, damage) {
+		this.chance = chance;
+		this.damage = damage;
+	}
+
+	function SkillBonus(skillName, value) {
+		this.skillName = skillName;
+		this.value = value;
+	}
+	
+	function Enchantment(name, slots) {
+		this.name = name;
+		this.slots = slots;
+		this.stats = [];
+	}
+
+	/* To be moved to a DB */
+	function InitEnchantments() {
+		var enchantments = [];
 		
-		this.getStatFromItems = function(statName) {
+		/* Blessings (Artifacts) */
+		var enchantment = new Enchantment("Odin", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Loki", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Frigga", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("SIF", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("AS", 2));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Balder", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Heimdall", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Fandral", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("critRat", 100));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Hogun", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("dmgRat_melee_pc", 3));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Volstagg", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("Hela", ["Art1", "Art2", "Art3", "Art4"]);
+		enchantment.stats.push(new Stat("brutRat_pc", 5));
+		enchantments.push(enchantment);
+		
+		/* Small enchants (Slot 1-5) */
+		enchantment = new Enchantment("+ Dmg Physical", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_physical", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Energy", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_energy", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Mental", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_mental", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Melee", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_melee", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Dmg Ranged", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_ranged", 50));
+		enchantments.push(enchantment);	
+		enchantment = new Enchantment("+ Dmg Area", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("dmgRat_area", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Critical Rating", ["Slot1", "Slot5"]);
+		enchantment.stats.push(new Stat("critRat", 50));
+		enchantments.push(enchantment);
+		enchantment = new Enchantment("+ Spirit", ["Slot2", "Slot3", "Slot4"]);
+		enchantment.stats.push(new Stat("spirit", 20));
+		enchantments.push(enchantment);
+		
+		return enchantments;
+	}
+	
+	function findEnchantment(name) {
+		var result = null;
+		enchantments.forEach(function(enchantment) {
+			if (enchantment.name == name) {
+				result = enchantment;
+			}
+		});
+		return result;
+	}
+	
+	return {
+		createNewItem: function(slot, name) {
+			return new Item(slot, name);
+		},
+		getAll: function() {
+			return items
+		},
+		getItemBySlot: function(slot) {
+			var result = null;
+			items.forEach(function(item) {
+				if (item.slot == slot) {
+					result = item;
+				}
+			});
+			return result;
+		},
+		getStatFromItems: function(statName) {
 			var total = 0;
-			this.items.forEach(function(item) {
+			items.forEach(function(item) {
 				item.stats.forEach(function(itemStat) {
 					if (itemStat.name == statName) {
 						total += itemStat.value;
@@ -68,7 +176,68 @@ angular.module('MHDC15App')
 				}
 			});
 			return total;
+		},
+	    getSkillBonus: function(skill) {
+			var total = 0;
+			items.forEach(function(item) {
+				item.skillBonuses.forEach(function(skillBonus) {
+					if (skillBonus.skillName == skill.name) {
+						total += skillBonus.value;
+					}
+				});
+			});
+			return total;
+		},
+		getProcs: function() {
+			var total = 0;
+			items.forEach(function(item) {
+				item.procs.forEach(function(proc) {
+					total += (proc.chance/100) * proc.damage;
+				});
+			});
+			return total;
 		}
+	}
+})
+.factory('$hero', function($items) {
+	var hero = new Hero();
+	hero.name = "SW";
+	return hero;
+	
+	function Hero() {
+		this.name;
+		this.baseStats = new Attributes();
+		this.skills = [];
+		this.synergies = [];
+		
+		this.getTotalStat = function(statName, targetSkill) {
+			var total = 0;
+			total += $items.getStatFromItems(statName);
+			total += this.getStatFromSkills(statName, targetSkill);
+			total += this.getSynergyBonus(statName);
+			if (statName == "AS") {
+				var AS = total + (this.baseStats.speed + $items.getStatFromItems("speed")) * 1;
+				var AS_DR = 0.4 * (1 - Math.exp(-3*AS/100)) * 100;
+				
+				total = (AS < AS_DR ? AS : AS_DR);
+			}
+			if (statName == "critRat") {
+				total += (this.baseStats.intelligence + $items.getStatFromItems("intelligence")) * 30;
+			}
+			if (statName == "critDmg") {
+				total += (this.baseStats.intelligence + $items.getStatFromItems("intelligence")) * 90;
+			}
+			if (statName == "brutRat") {
+				total += (this.baseStats.fighting + $items.getStatFromItems("fighting")) * 60;
+			}
+			if (statName == "brutDmg") {
+				total += (this.baseStats.fighting + $items.getStatFromItems("fighting")) * 180;
+			}
+			if (statName == "spirit") {
+				total += (this.baseStats.intelligence + $items.getStatFromItems("intelligence")) * 2;
+			}
+			return total;
+		};
 		
 		this.getStatFromSkills = function(statName, targetSkill) {
 			var total = 0;
@@ -77,54 +246,30 @@ angular.module('MHDC15App')
 			});
 			return total;
 		}
-		
-		this.getItemBySlot = function(slot) {
-			var result = null;
-			this.items.forEach(function(item) {
-				if (item.slot == slot) {
-					result = item;
-				}
-			});
-			return result;
-		};
 
 		this.getPhysicalBonusDmg = function(withItems) {
-			var fighting = this.baseStats.fighting;
-			var strength = this.baseStats.strength;
 			if (withItems) {
-				fighting += this.getTotalStat("fighting");
-				strength += this.getTotalStat("strength");
+				return this.fighting * 0.03 + this.strength * 0.04;
+			} else {
+				return this.baseStats.fighting * 0.03 + this.baseStats.strength * 0.04;
 			}
-			return fighting * 0.03 + strength * 0.04;
 		};
 		
 		this.getMentalBonusDmg = function(withItems) {
-			var fighting = this.baseStats.fighting;
-			var energy = this.baseStats.energy;
 			if (withItems) {
-				fighting += this.getTotalStat("fighting");
-				energy += this.getTotalStat("energy");
+				return this.fighting * 0.03 + this.energy * 0.04;
+			} else {
+				return this.baseStats.fighting * 0.03 + this.baseStats.energy * 0.04;
 			}
-			return fighting * 0.03 + energy * 0.04;
 		};
 		
 		this.getSummonBonusDmg = function(withItems) {
-			var intelligence = this.baseStats.intelligence;
 			if (withItems) {
-				intelligence += this.getTotalStat("intelligence");
+				return this.intelligence * 0.04;
+			} else {
+				return this.baseStats.intelligence * 0.04;
 			}
-			return intelligence * 0.04;
 		}
-		
-		this.getProcs = function() {
-			var total = 0;
-			this.items.forEach(function(item) {
-				item.procs.forEach(function(proc) {
-					total += (proc.chance/100) * proc.damage;
-				});
-			});
-			return total;
-		};
 		
 		this.getSkillByName = function(name) {
 			var result = null;
@@ -145,19 +290,7 @@ angular.module('MHDC15App')
 			});
 			return result;
 		};
-		
-		this.getSkillBonus = function(skill) {
-			var total = 0;
-			this.items.forEach(function(item) {
-				item.skillBonuses.forEach(function(skillBonus) {
-					if (skillBonus.skillName == skill.name) {
-						total += skillBonus.value;
-					}
-				});
-			});
-			return total;
-		};
-		
+
 		this.countActiveSynergies = function() {
 			var total = 0;
 			this.synergies.forEach(function(synergy) {
@@ -225,6 +358,64 @@ angular.module('MHDC15App')
 		this.addSynergy = function(name, lvl25Stat, lvl50Stat) {
 			this.synergies.push(new Synergy(name, lvl25Stat, lvl50Stat));
 		}
+		
+		this.calculate = function() {
+			this.strength = this.baseStats.strength + this.getTotalStat("strength");
+			this.durability = this.baseStats.durability + this.getTotalStat("durability");
+			this.fighting = this.baseStats.fighting + this.getTotalStat("fighting");
+			this.speed = this.baseStats.speed + this.getTotalStat("speed");
+			this.energy = this.baseStats.energy + this.getTotalStat("energy");
+			this.intelligence = this.baseStats.intelligence + this.getTotalStat("intelligence");
+			
+			this.dmgRat = this.getTotalStat("dmgRat");
+			this.dmgRatPhysical = this.getTotalStat("dmgRat_physical");
+			this.dmgRatEnergy = this.getTotalStat("dmgRat_energy");
+			this.dmgRatMental = this.getTotalStat("dmgRat_mental");
+			this.dmgRatMelee = this.getTotalStat("dmgRat_melee");
+			this.dmgRatRanged = this.getTotalStat("dmgRat_ranged");
+			this.dmgRatArea = this.getTotalStat("dmgRat_area");
+			this.dmgRatDot = this.getTotalStat("dmgRat_dot");
+
+			this.dmgRatPc = this.getTotalStat("dmgRat_pc");
+			this.dmgRatPhysicalPc = this.getTotalStat("dmgRat_physical_pc");
+			this.dmgRatEnergyPc = this.getTotalStat("dmgRat_energy_pc");
+			this.dmgRatMentalPc = this.getTotalStat("dmgRat_mental_pc");
+			this.dmgRatMeleePc = this.getTotalStat("dmgRat_melee_pc");
+			this.dmgRatRangedPc = this.getTotalStat("dmgRat_ranged_pc");
+			this.dmgRatAreaPc = this.getTotalStat("dmgRat_area_pc");
+			this.dmgRatDotPc = this.getTotalStat("dmgRat_dot_pc");
+			this.dmgRatSummonPc = this.getTotalStat("dmgRat_summon_pc");
+			
+			this.AS = this.getTotalStat("AS");
+			
+			this.critRat = this.getTotalStat("critRat");
+			this.critRatPhysical = this.getTotalStat("critRat_physical");
+			this.critRatEnergy = this.getTotalStat("critRat_energy");
+			this.critRatMental = this.getTotalStat("critRat_mental");
+			this.critRatMelee = this.getTotalStat("critRat_melee");
+			this.critRatRanged = this.getTotalStat("critRat_ranged");
+			this.critRatArea = this.getTotalStat("critRat_area");
+			
+			this.critRatPc = this.getTotalStat("critRat_pc");
+			this.critRatPhysicalPc = this.getTotalStat("critRat_physical_pc");
+			this.critRatEnergyPc = this.getTotalStat("critRat_energy_pc");
+			this.critRatMentalPc = this.getTotalStat("critRat_mental_pc");
+			
+			this.critDmg = this.getTotalStat("critDmg");
+			this.brutRat = this.getTotalStat("brutRat");
+			this.brutDmg = this.getTotalStat("brutDmg");
+
+			this.critDmgPc = this.getTotalStat("critDmg_pc");
+			this.brutRatPc = this.getTotalStat("brutRat_pc");
+			this.brutDmgPc = this.getTotalStat("brutDmg_pc");
+
+			this.spirit = this.getTotalStat("spirit");
+			
+			this.skills.forEach(function(skill) {
+				skill.calculate();
+			});
+		}
+		this.calculate();
 	};
 	
 	function Skill(name, lvl, tree) {
@@ -245,22 +436,12 @@ angular.module('MHDC15App')
 		
 		this.totalLvl = function() {
 			if (this.lvl > 0) {
-				return this.lvl + hero.getStatFromItems(this.tree) + hero.getSkillBonus(this);
+				return this.lvl + $items.getStatFromItems(this.tree) + $items.getSkillBonus(this);
 			} else {
 				return 0;
 			}
 		}
 		
-		this.dps = function() {
-			var skill = this;
-			var total = 0;
-			this.effects.forEach(function(effect) {
-				if (effect.isActive()) {
-					total += effect.dps();
-				}
-			});
-			return total;
-		};
 		this.getActiveEffects = function() {
 			var activeEffects = [];
 			this.effects.forEach(function(effect) {
@@ -292,8 +473,8 @@ angular.module('MHDC15App')
 			return total;
 		}
 		
-		this.addActiveEffect = function(name, lvl1MinDmg, lvl1MaxDmg, baseAS, procRate, damageType, proximity, extraTags) {
-			this.effects.push(new ActiveEffect(this, name, lvl1MinDmg, lvl1MaxDmg, baseAS, procRate, damageType, proximity, extraTags));
+		this.addActiveEffect = function(name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags) {
+			this.effects.push(new ActiveEffect(this, name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags));
 		}
 		this.addPassiveEffect = function(name, value, scope) {
 			this.effects.push(new PassiveEffect(this, name, value, scope));
@@ -301,14 +482,26 @@ angular.module('MHDC15App')
 		this.addSpecialEffect = function(name, statName, scope) {
 			this.effects.push(new SpecialEffect(this, name, statName, scope));
 		}
+		
+		this.calculate = function() {
+			var totalDps = 0;
+			
+			this.getActiveEffects().forEach(function(activeEffect) {
+				activeEffect.calculate();
+				totalDps += activeEffect.dps;
+			});	
+			this.dps = totalDps;
+		}
 	}
 	
-	function ActiveEffect(skill, name, lvl1MinDmg, lvl1MaxDmg, baseAS, procRate, damageType, proximity, extraTags) {
+	function ActiveEffect(skill, name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags) {
 		this.skill = skill;
 		this.name = name;
 		this.lvl1MinDmg = lvl1MinDmg;
 		this.lvl1MaxDmg = lvl1MaxDmg;
 		this.baseAS = baseAS;
+		this.duration = duration;
+		this.cooldown = cooldown;
 		this.procRate = procRate;
 		this.damageType = damageType;
 		this.proximity = proximity;
@@ -357,7 +550,7 @@ angular.module('MHDC15App')
 			return this.extraTags.indexOf("S") > -1;
 		}
 		
-		this.baseDmg = function() {
+		this.calculateBaseDmg = function() {
 			var avgDmg = (this.lvl1MinDmg + this.lvl1MaxDmg)/2;
 			var level = (skill.totalLvl() > 0 ? (skill.totalLvl()-1) : 0);
 			return avgDmg * (1+(0.1*level)) / (1 + 
@@ -368,87 +561,102 @@ angular.module('MHDC15App')
 				(this.isSummon() ? hero.getSummonBonusDmg(false) : 0));
 				
 		};
-		this.AS = function() {
-			return this.isDot() || this.isMvt() || this.hasCooldown() || this.isSummon() ? this.baseAS : (this.baseAS * (1+hero.getTotalStat("AS", skill)/100) * (this.isBarrage() ? (1+(skill.lvl-1)/100) : 1));
+		this.calculateAS = function() {
+			return this.isDot() || this.isMvt() || this.hasCooldown() || this.isSummon() ? this.baseAS : (this.baseAS * (1+hero.AS/100) * (this.isBarrage() ? (1+(skill.lvl-1)/100) : 1));
 		};
-		this.dmgRat = function() {
-			return hero.getTotalStat("dmgRat", skill) + 
-				(this.isPhysical() ? hero.getTotalStat("dmgRat_physical", skill) : 0) +
-				(this.isEnergy() ? hero.getTotalStat("dmgRat_energy", skill) : 0) +
-				(this.isMental() ? hero.getTotalStat("dmgRat_mental", skill) : 0) +
-				(this.isMelee() ? hero.getTotalStat("dmgRat_melee", skill) : 0) +
-				(this.isRanged() ? hero.getTotalStat("dmgRat_ranged", skill) : 0) +
-				(this.isArea() ? hero.getTotalStat("dmgRat_area", skill) : 0) +
-				(this.isDot() ? hero.getTotalStat("dmgRat_dot", skill) : 0);
+		this.calculateDmgRat = function() {
+			return hero.dmgRat + 
+				(this.isPhysical() ? hero.dmgRatPhysical : 0) +
+				(this.isEnergy() ? hero.dmgRatEnergy : 0) +
+				(this.isMental() ? hero.dmgRatMental : 0) +
+				(this.isMelee() ? hero.dmgRatMelee : 0) +
+				(this.isRanged() ? hero.dmgRatRanged : 0) +
+				(this.isArea() ? hero.dmgRatArea : 0) +
+				(this.isDot() ? hero.dmgRatDot : 0);
 		};
-		this.dmgRat_Fact = function() { 
-			return this.dmgRat()/enemyLvl*0.015 +
-				hero.getTotalStat("dmgRat_pc", skill)/100 +
-				(this.isPhysical() ? hero.getTotalStat("dmgRat_physical_pc", skill)/100 : 0) +
-				(this.isEnergy() ? hero.getTotalStat("dmgRat_energy_pc", skill)/100 : 0) +
-				(this.isMental() ? hero.getTotalStat("dmgRat_mental_pc", skill)/100 : 0) +
-				(this.isMelee() ? hero.getTotalStat("dmgRat_melee_pc", skill)/100 : 0) +
-				(this.isRanged() ? hero.getTotalStat("dmgRat_ranged_pc", skill)/100 : 0) +
-				(this.isArea() ? hero.getTotalStat("dmgRat_area_pc", skill)/100 : 0) +
-				(this.isDot() ? hero.getTotalStat("dmgRat_dot_pc", skill)/100 : 0) +
-				(this.isSummon() ? hero.getTotalStat("dmgRat_summon_pc", skill)/100 : 0);
+		this.calculateDmgRatFact = function() { 
+			return this.dmgRat/enemyLvl*0.015 +
+				hero.dmgRatPc/100 +
+				(this.isPhysical() ? hero.dmgRatPhysicalPc/100 : 0) +
+				(this.isEnergy() ? hero.dmgRatEnergyPc/100 : 0) +
+				(this.isMental() ? hero.dmgRatMentalPc/100 : 0) +
+				(this.isMelee() ? hero.dmgRatMeleePc/100 : 0) +
+				(this.isRanged() ? hero.dmgRatRangedPc/100 : 0) +
+				(this.isArea() ? hero.dmgRatAreaPc/100 : 0) +
+				(this.isDot() ? hero.dmgRatDotPc/100 : 0) +
+				(this.isSummon() ? hero.dmgRatSummonPc/100 : 0);
 		};
-		this.dmg_Fact = function() {
-			return this.dmgRat_Fact() +
+		this.calculateDmgFact = function() {
+			return this.dmgRatFact +
 				(this.isPhysical() ? hero.getPhysicalBonusDmg(true) : 0) +
 				(this.isEnergy() || this.isMental() ? hero.getMentalBonusDmg(true) : 0) +
 				(this.isSummon() ? hero.getSummonBonusDmg(true) : 0);
 		};
-		this.dmg = function() {
-			return this.baseDmg()*(1+this.dmg_Fact())
+		this.calculateDmg = function() {
+			return this.baseDmg*(1+this.dmgFact)
 		};
-		this.critRat_Fact = function() {
-			var critRat = hero.getTotalStat("critRat", skill) +
-				(this.isPhysical() ? hero.getTotalStat("critRat_physical", skill) : 0) +
-				(this.isEnergy() ? hero.getTotalStat("critRat_energy", skill) : 0) +
-				(this.isMental() ? hero.getTotalStat("critRat_mental", skill) : 0) +
-				(this.isMelee() ? hero.getTotalStat("critRat_melee", skill) : 0) +
-				(this.isRanged() ? hero.getTotalStat("critRat_ranged", skill) : 0) +
-				(this.isArea() ? hero.getTotalStat("critRat_area", skill) : 0);
+		this.calculateCritRatFact = function() {
+			var critRat = hero.critRat +
+				(this.isPhysical() ? hero.critRatPhysical : 0) +
+				(this.isEnergy() ? hero.critRatEnergy : 0) +
+				(this.isMental() ? hero.critRatMental : 0) +
+				(this.isMelee() ? hero.critRatMelee : 0) +
+				(this.isRanged() ? hero.critRatRanged : 0) +
+				(this.isArea() ? hero.critRatArea : 0);
 				
-			var critRat_Fact = ((99 * critRat)/(critRat + 60 * enemyLvl + 1)/100);
-			critRat_Fact += hero.getTotalStat("critRat_pc", skill)/100;
-			critRat_Fact += (this.isPhysical() ? hero.getTotalStat("critRat_physical_pc", skill)/100 : 0);
-			critRat_Fact += (this.isEnergy() ? hero.getTotalStat("critRat_energy_pc", skill)/100 : 0);
-			critRat_Fact += (this.isMental() ? hero.getTotalStat("critRat_mental_pc", skill)/100 : 0);
+			var critRatFact = ((99 * critRat)/(critRat + 60 * enemyLvl + 1)/100);
+			critRatFact += hero.critRatPc/100;
+			critRatFact += (this.isPhysical() ? hero.critRatPhysicalPc/100 : 0);
+			critRatFact += (this.isEnergy() ? hero.critRatEnergyPc/100 : 0);
+			critRatFact += (this.isMental() ? hero.critRatMentalPc/100 : 0);
 			
-			return critRat_Fact;
+			return critRatFact;
 		};
-		this.critDmg_Fact = function() {
-			var critDmg = hero.getTotalStat("critDmg", skill);
-			var critDmg_Fact = ((150 + critDmg/enemyLvl * 0.75)/100);
-			critDmg_Fact += hero.getTotalStat("critDmg_pc", skill)/100;
+		this.calculateCritDmgFact = function() {
+			var critDmg = hero.critDmg;
+			var critDmgFact = ((150 + critDmg/enemyLvl * 0.75)/100);
+			critDmgFact += hero.critDmgPc/100;
 			
-			return critDmg_Fact;
+			return critDmgFact;
 		};
-		this.brutRat_Fact = function() {
-			var brutRat = hero.getTotalStat("brutRat", skill);
-			var brutRat_Fact = ((75 * brutRat)/(brutRat + 60 * enemyLvl + 1)/100);
-			brutRat_Fact += hero.getTotalStat("brutRat_pc", skill)/100;
+		this.calculateBrutRatFact = function() {
+			var brutRat = hero.brutRat;
+			var brutRatFact = ((75 * brutRat)/(brutRat + 60 * enemyLvl + 1)/100);
+			brutRatFact += hero.brutRatPc/100;
 			
-			return brutRat_Fact;
+			return brutRatFact;
 		};
-		this.brutDmg_Fact = function() {
-			var critDmg = hero.getTotalStat("critDmg", skill);
-			var brutDmg = hero.getTotalStat("brutDmg", skill);
-			var brutDmg_Fact = ((300 + ((critDmg+brutDmg)/enemyLvl * 0.75))/100);
-			brutDmg_Fact += hero.getTotalStat("brutDmg_pc", skill)/100;
+		this.calculateBrutDmgFact = function() {
+			var critDmg = hero.critDmg;
+			var brutDmg = hero.brutDmg;
+			var brutDmgFact = ((300 + ((critDmg+brutDmg)/enemyLvl * 0.75))/100);
+			brutDmgFact += hero.brutDmgPc/100;
 			
-			return brutDmg_Fact;
+			return brutDmgFact;
 		};
-		this.crit_Fact = function() {
-			return (1 - this.critRat_Fact()) * 1 + 
-					(this.critRat_Fact() - (this.brutRat_Fact() * this.critRat_Fact())) * this.critDmg_Fact() +
-					(this.brutRat_Fact() * this.critRat_Fact()) * this.brutDmg_Fact();
+		this.calculateCritFact = function() {
+			return (1 - this.critRatFact) * 1 + 
+					(this.critRatFact - (this.brutRatFact * this.critRatFact)) * this.critDmgFact +
+					(this.brutRatFact * this.critRatFact) * this.brutDmgFact;
 		};
-		this.dps = function() {
-			return this.dmg()*this.crit_Fact()*this.AS() + hero.getProcs()*this.AS()*this.procRate;
+		this.calculateDps = function() {
+			return this.dmg*this.critFact*this.AS + $items.getProcs()*this.AS*this.procRate;
 		};
+		
+		this.calculate = function() {
+			this.baseDmg = this.calculateBaseDmg();
+			this.AS = this.calculateAS();
+			this.dmgRat = this.calculateDmgRat();
+			this.dmgRatFact = this.calculateDmgRatFact();
+			this.dmgFact = this.calculateDmgFact();
+			this.dmg = this.calculateDmg();
+			this.critRatFact = this.calculateCritRatFact();
+			this.critDmgFact = this.calculateCritDmgFact();
+			this.brutRatFact = this.calculateBrutRatFact();
+			this.brutDmgFact = this.calculateBrutDmgFact();
+			this.critFact = this.calculateCritFact();
+			this.dps = this.calculateDps();
+		}
 	};
 
 	function PassiveEffect(skill, name, value, scope) {
@@ -532,7 +740,7 @@ angular.module('MHDC15App')
 			if (includeSkillScope || !this.isSkillScope()) {
 				if (this.stat.name == statName && (!this.isBuff() || this.isBuffEnabled())) {
 					if (this.name == "ARE") { // Arc Reactor Enhancement for Iron Man
-						totalSpirit = hero.getTotalStat("spirit", skill) + 60;
+						totalSpirit = hero.spirit + 60;
 						total += totalSpirit * 3;
 					}
 				}
@@ -550,60 +758,8 @@ angular.module('MHDC15App')
 		this.intelligence = 0;
 	}
 
-	function Item(slot, name) {
-		this.slot = slot;
-		this.name = name;
-		this.stats = [];
-		this.procs = [];
-		this.skillBonuses = [];
-		this.enchantment = null;
-		
-		this.getStat = function(statName) {
-			var value = 0;
-			for (var i = 0, len = this.stats.length;  i < len; i++) {
-				if (this.stats[i].name == statName) {
-					value = this.stats[i].value;
-					break;
-				}
-			};
-			return value;
-		}
-		
-		this.addStat = function(statName, statValue) {
-			this.stats.push(new Stat(statName, statValue));
-		}
-		this.addProc = function(procChance, procDamage) {
-			this.procs.push(new Proc(procChance, procDamage));
-		}
-		this.addSkillBonus = function(skillName, value) {
-			this.skillBonuses.push(new SkillBonus(skillName, value));
-		}
-		this.setEnchantment = function(name) {
-			this.enchantment = findEnchantment(name);
-		}
-		this.getPossibleEnchantments = function() {
-			var result = [];
-			enchantments.forEach(function(enchantment) {
-				if (enchantment.slots.indexOf(this.slot) > -1){
-					result.push(enchantment);
-				}
-			});
-			return result;
-		};
-	}
-
 	function Stat(name, value) {
 		this.name = name;
-		this.value = value;
-	}
-
-	function Proc(chance, damage) {
-		this.chance = chance;
-		this.damage = damage;
-	}
-
-	function SkillBonus(skillName, value) {
-		this.skillName = skillName;
 		this.value = value;
 	}
 
@@ -616,80 +772,4 @@ angular.module('MHDC15App')
 			return (this.lvl > 0);
 		};
 	}
-
-	function Enchantment(name, slots) {
-		this.name = name;
-		this.slots = slots;
-		this.stats = [];
-	}
-
-	/* To be moved to a DB */
-	function InitEnchantments() {
-		var enchantments = [];
-		
-		/* Blessings (Artifacts) */
-		var enchantment = new Enchantment("Odin", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Loki", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Frigga", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("SIF", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantment.stats.push(new Stat("AS", 2));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Balder", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Heimdall", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Fandral", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantment.stats.push(new Stat("critRat", 100));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Hogun", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantment.stats.push(new Stat("dmgRat_melee_pc", 3));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Volstagg", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("Hela", ["Art1", "Art2", "Art3", "Art4"]);
-		enchantment.stats.push(new Stat("brutRat_pc", 5));
-		enchantments.push(enchantment);
-		
-		/* Small enchants (Slot 1-5) */
-		enchantment = new Enchantment("+ Dmg Physical", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_physical", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Dmg Energy", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_energy", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Dmg Mental", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_mental", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Dmg Melee", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_melee", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Dmg Ranged", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_ranged", 50));
-		enchantments.push(enchantment);	
-		enchantment = new Enchantment("+ Dmg Area", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("dmgRat_area", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Critical Rating", ["Slot1", "Slot5"]);
-		enchantment.stats.push(new Stat("critRat", 50));
-		enchantments.push(enchantment);
-		enchantment = new Enchantment("+ Spirit", ["Slot2", "Slot3", "Slot4"]);
-		enchantment.stats.push(new Stat("spirit", 20));
-		enchantments.push(enchantment);
-		
-		return enchantments;
-	}
-	
-	function findEnchantment(name) {
-		var result = null;
-		enchantments.forEach(function(enchantment) {
-			if (enchantment.name == name) {
-				result = enchantment;
-			}
-		});
-		return result;
-	}
-	
 })

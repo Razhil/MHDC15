@@ -11,62 +11,58 @@
 		</div>
 		<div data-ng-repeat="stat in item.stats" class="row">
 			<div class="col-xs-6">
-				<select data-ng-model="stat.name" data-ng-options="stat as getStatLabel(stat) for stat in stats" data-ng-disabled="readonly"></select>
+				<select data-ng-model="stat.name" data-ng-options="stat as getStatLabel(stat) for stat in stats" data-ng-disabled="readonly" data-ng-change="recalculate()"></select>
 			</div>
-			<div class="col-xs-4">
-				<input type="number" min="0" data-ng-model="stat.value" data-ng-disabled="readonly"></input>
+			<div data-ng-class="{'col-xs-4':!readonly, 'col-xs-6':readonly}">
+				<input type="number" min="0" data-ng-model="stat.value" data-ng-disabled="readonly" data-ng-change="recalculate()"></input>
 			</div>
 			<div class="col-xs-2">
-				<input type="button" value="X" data-ng-click="deleteStat(item, stat)" data-ng-disabled="readonly">
+				<input type="button" value="X" data-ng-click="deleteStat(item, stat)" data-ng-show="!readonly" data-ng-click="recalculate()">
 			</div>
 		</div>
 		<div data-ng-repeat="proc in item.procs" class="row">
 			<div class="col-xs-3">
 				<label>
-					<input type="number" min="0" class="small col-xs-7 no-padding" data-ng-model="proc.chance" data-ng-disabled="readonly"></input>
+					<input type="number" min="0" class="small col-xs-7 no-padding" data-ng-model="proc.chance" data-ng-disabled="readonly" data-ng-change="recalculate()"></input>
 					<span class="col-xs-5">%</span>
 				</label>
 			</div>
-			<div class="col-xs-8">
-				<input type="number" min="0" data-ng-model="proc.damage" data-ng-disabled="readonly"></input>
+			<div data-ng-class="{'col-xs-8':!readonly, 'col-xs-9':readonly}">
+				<input type="number" min="0" data-ng-model="proc.damage" data-ng-disabled="readonly" data-ng-change="recalculate()"></input>
 			</div>
 			<div class="col-xs-1">
-				<input type="button" value="X" data-ng-click="deleteProc(item, proc)" data-ng-disabled="readonly">
+				<input type="button" value="X" data-ng-click="deleteProc(item, proc)" data-ng-show="!readonly" data-ng-click="recalculate()">
 			</div>
 		</div>
 		<div data-ng-repeat="skillBonus in item.skillBonuses" class="row">
 			<div class="col-xs-3 right">
-				+ <input type="number" min="0" class="small" data-ng-model="skillBonus.value" data-ng-disabled="readonly"></input>
+				<input type="number" min="0" class="small" data-ng-model="skillBonus.value" data-ng-disabled="readonly" data-ng-change="recalculate()"></input>
 			</div>
-			<div class="col-xs-8">
-				<select data-ng-model="skillBonus.skillName" data-ng-options="skill.name as skill.name for skill in skills" data-ng-disabled="readonly"></select>
+			<div data-ng-class="{'col-xs-8':!readonly, 'col-xs-9':readonly}">
+				<select data-ng-model="skillBonus.skillName" data-ng-options="skill.name as skill.name for skill in skills" data-ng-disabled="readonly" data-ng-change="recalculate()"></select>
 			</div>
 			<div class="col-xs-1">
-				<input type="button" value="X" data-ng-click="deleteSkillBonus(item, skillBonus)" data-ng-disabled="readonly">
+				<input type="button" value="X" data-ng-click="deleteSkillBonus(item, skillBonus)" data-ng-show="!readonly" data-ng-click="recalculate()">
 			</div>
 		</div>
 		<div class="row" ng-show="item.getPossibleEnchantments().length > 0">
 			<label for="enchantment" class="col-xs-6">Enchantment</label>
 			<div class="col-xs-6">
-				<select id="enchantment" data-ng-model="item.enchantment" data-ng-options="enchantment.name for enchantment in item.getPossibleEnchantments()" data-ng-disabled="readonly">
+				<select id="enchantment" data-ng-model="item.enchantment" data-ng-options="enchantment.name for enchantment in item.getPossibleEnchantments()" 
+					data-ng-disabled="readonly" data-ng-change="recalculate()">
 					<option value=""></option>
 				</select>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" data-ng-show="!readonly">
 			<div class="col-xs-4">
-				<input type="button" value="Add stat" data-ng-click="addStat(item)" data-ng-disabled="readonly || item.stats.length >= 10">
+				<input type="button" value="Add stat" data-ng-click="addStat(item)" data-ng-disabled="item.stats.length >= 10">
 			</div>
 			<div class="col-xs-4">
-				<input type="button" value="Add proc" data-ng-click="addProc(item)" data-ng-disabled="readonly || item.procs.length >= 3">
+				<input type="button" value="Add proc" data-ng-click="addProc(item)" data-ng-disabled="item.procs.length >= 3">
 			</div>
 			<div class="col-xs-4">
-				<input type="button" value="+ skill" data-ng-click="addSkillBonus(item)" data-ng-disabled="readonly || item.skillBonuses.length >= 3">
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<input type="button" value="Close" data-ng-click="closeEdit()">
+				<input type="button" value="+ skill" data-ng-click="addSkillBonus(item)" data-ng-disabled="item.skillBonuses.length >= 3">
 			</div>
 		</div>
 	</div>

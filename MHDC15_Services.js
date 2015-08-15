@@ -1,5 +1,5 @@
 angular.module('MHDC15App')
-.factory('dataService', function($http, $hero) {
+.factory('dataService', function($http, $hero, $items) {
 	var loadHeroSkills = function(heroName) {
 		return $http.get("Skills_"+heroName+".json").then(
 			function(resp) {
@@ -17,7 +17,8 @@ angular.module('MHDC15App')
 						
 						if (entry.effect == "Active") {
 							skill.addActiveEffect((entry.effectname ? entry.effectname : 'Attack'), parseFloat(entry.lvl1mindmg), parseFloat(entry.lvl1maxdmg), 
-								parseFloat(entry.baseas), parseFloat(entry.procrate), entry.damagetype, entry.proximity, entry.extratags);
+								parseFloat(entry.baseas), parseFloat(entry.duration), parseFloat(entry.cooldown), 
+								parseFloat(entry.procrate), entry.damagetype, entry.proximity, entry.extratags);
 						} else if (entry.effect == "Passive") {
 							skill.addPassiveEffect(entry.statname, parseFloat(entry.statvalue), entry.statscope);
 						} else if (entry.effect == "Special") {
@@ -38,7 +39,7 @@ angular.module('MHDC15App')
 		loadHeroSkills : loadHeroSkills
 	};
 })
-.factory('excelService', function($http, $hero) {
+.factory('excelService', function($http, $hero, $items) {
 	var loadHeroStats = function(heroName) {
 		url = "https://spreadsheets.google.com/feeds/list/1pNRoV5zKlGfvh4WKO8_TbU2c_7SRQkj4tXPYrr0pZhE/od6/public/full?alt=json&sq=hero%3D"+heroName;
 		return $http.get(url).then(
@@ -142,34 +143,37 @@ angular.module('MHDC15App')
 						});
 					} else {
 						var loadedItem = JSON.parse(entry.gsx$name.$t);
-						var item = $hero.getItemBySlot(loadedItem.slot);
-						item.name = loadedItem.name;
-						loadedItem.stats.forEach(function(stat) {
-							item.addStat(stat.name, stat.value);
-						});
-						loadedItem.procs.forEach(function(proc) {
-							item.addProc(proc.chance, proc.damage);
-						});
-						loadedItem.skillBonuses.forEach(function(skillBonus) {
-							item.addSkillBonus(skillBonus.skillName, skillBonus.value);
-						});
-						if (loadedItem.enchantment) {
-							item.setEnchantment(loadedItem.enchantment.name);
-						}
-						/*if (loadedItem.itemId) {
-							$http.get("https://spreadsheets.google.com/feeds/list/1-NVwOqkajupPMSK7UbeP7HcDqy_T6aSEs6_v1iv3MrI/od6/public/full?alt=json&sq=id%3D"+loadedItem.itemId)
-							.success(function(resp) {
-								if (resp.feed.openSearch$totalResults.$t > 0) {
-									item.itemId = loadedItem.itemId;
-									item.name = resp.feed.entry[0].gsx$name.$t;
-									item.link = resp.feed.entry[0].gsx$link.$t;
-									item.link = item.link.replace(/\{(.*?)\}/g, function(s, m1) {return item.getStat(m1);});
-									IB_Init();
-								}
+						var item = $items.getItemBySlot(loadedItem.slot);
+						if (item) {
+							item.name = loadedItem.name;
+							loadedItem.stats.forEach(function(stat) {
+								item.addStat(stat.name, stat.value);
 							});
-						}*/
+							loadedItem.procs.forEach(function(proc) {
+								item.addProc(proc.chance, proc.damage);
+							});
+							loadedItem.skillBonuses.forEach(function(skillBonus) {
+								item.addSkillBonus(skillBonus.skillName, skillBonus.value);
+							});
+							if (loadedItem.enchantment) {
+								item.setEnchantment(loadedItem.enchantment.name);
+							}
+							/*if (loadedItem.itemId) {
+								$http.get("https://spreadsheets.google.com/feeds/list/1-NVwOqkajupPMSK7UbeP7HcDqy_T6aSEs6_v1iv3MrI/od6/public/full?alt=json&sq=id%3D"+loadedItem.itemId)
+								.success(function(resp) {
+									if (resp.feed.openSearch$totalResults.$t > 0) {
+										item.itemId = loadedItem.itemId;
+										item.name = resp.feed.entry[0].gsx$name.$t;
+										item.link = resp.feed.entry[0].gsx$link.$t;
+										item.link = item.link.replace(/\{(.*?)\}/g, function(s, m1) {return item.getStat(m1);});
+										IB_Init();
+									}
+								});
+							}*/
+						}
 					}
 				});
+				$hero.calculate();
 			}
 		})
 		.error(function(resp) {
