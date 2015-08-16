@@ -9,11 +9,11 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		templateUrl: 'MHDC15_SW.html',
 		controller: 'SWCtrl',
 		resolve: {
-			loadHeroStats: function ($route, excelService) {
-				return excelService.loadHeroStats($route.current.params.heroName);
+			loadHeroStats: function ($route, dataService) {
+				return dataService.loadHeroStats($route.current.params.heroName);
 			},
-			loadHeroSynergies: function (excelService) {
-				return excelService.loadHeroSynergies();
+			loadHeroSynergies: function (dataService) {
+				return dataService.loadHeroSynergies();
 			},
 			loadHeroSkills: function($route, dataService) {
 				return dataService.loadHeroSkills($route.current.params.heroName);

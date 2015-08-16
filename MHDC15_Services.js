@@ -1,28 +1,52 @@
 angular.module('MHDC15App')
 .factory('dataService', function($http, $hero, $items) {
+	var loadHeroStats = function(heroName) {
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/HeroStats?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		return $http.get(url).then(
+			function(resp) {
+				if (resp.data.length > 0) {
+					resp.data.forEach(function(entry) {
+						$hero.baseStats.durability = parseInt(entry.durability);
+						$hero.baseStats.strength = parseInt(entry.strength);
+						$hero.baseStats.fighting = parseInt(entry.fighting);
+						$hero.baseStats.speed = parseInt(entry.speed);
+						$hero.baseStats.energy = parseInt(entry.energy);
+						$hero.baseStats.intelligence = parseInt(entry.intelligence);
+					});
+					return "OK";
+				}
+			},
+			function(resp) {
+				alert("Failed to load data : " + resp);
+				return [];
+			}
+		);
+	}
+	
 	var loadHeroSkills = function(heroName) {
-		return $http.get("Skills_"+heroName+".json").then(
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Skills?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_"; //"Skills_"+heroName+".json"
+		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.length > 0) {
 					resp.data.forEach(function(entry) {
 						var skill;
 						$hero.skills.forEach(function(heroSkill) {
-							if (heroSkill.name == entry.skillname) {
+							if (heroSkill.name == entry.skillName) {
 								skill = heroSkill;
 							}
 						});
 						if (!skill) {
-							skill = $hero.addSkill(entry.skillname, 20, entry.tree, []);
+							skill = $hero.addSkill(entry.skillName, 20, entry.tree, []);
 						}
 						
 						if (entry.effect == "Active") {
-							skill.addActiveEffect((entry.effectname ? entry.effectname : 'Attack'), parseFloat(entry.lvl1mindmg), parseFloat(entry.lvl1maxdmg), 
-								parseFloat(entry.baseas), parseFloat(entry.duration), parseFloat(entry.cooldown), 
-								parseFloat(entry.procrate), entry.damagetype, entry.proximity, entry.extratags);
+							skill.addActiveEffect((entry.effectName ? entry.effectName : 'Attack'), parseFloat(entry.lvl1MinDmg), parseFloat(entry.lvl1MaxDmg), 
+								parseFloat(entry.baseAS), parseFloat(entry.duration), parseFloat(entry.cooldown), 
+								parseFloat(entry.procRate), entry.damageType, entry.proximity, entry.extraTags);
 						} else if (entry.effect == "Passive") {
-							skill.addPassiveEffect(entry.statname, parseFloat(entry.statvalue), entry.statscope);
+							skill.addPassiveEffect(entry.statName, parseFloat(entry.statValue), entry.statScope);
 						} else if (entry.effect == "Special") {
-							skill.addSpecialEffect(entry.statname, entry.statname, entry.statscope);
+							skill.addSpecialEffect(entry.statName, entry.statName, entry.statScope);
 						}
 					});
 					return "OK";
@@ -35,13 +59,37 @@ angular.module('MHDC15App')
 		);
 	}
 	
+	var loadHeroSynergies = function() {
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Synergies?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		return $http.get(url).then(
+			function(resp) {
+				if (resp.data.length > 0) {
+					resp.data.forEach(function(entry) {
+						$hero.addSynergy(
+							entry.name,
+							{name: entry.stat25Name, value: parseInt(entry.stat25Value)},
+							{name: entry.stat50Name, value: parseInt(entry.stat50Value)}
+						);
+					});
+					return "OK";
+				}
+			},
+			function(resp) {
+				alert("Failed to load data : " + resp);
+				return [];
+			}
+		)
+	}
+	
 	return {
-		loadHeroSkills : loadHeroSkills
+		loadHeroStats : loadHeroStats,
+		loadHeroSkills : loadHeroSkills,
+		loadHeroSynergies : loadHeroSynergies
 	};
 })
 .factory('excelService', function($http, $hero, $items) {
 	var loadHeroStats = function(heroName) {
-		url = "https://spreadsheets.google.com/feeds/list/1pNRoV5zKlGfvh4WKO8_TbU2c_7SRQkj4tXPYrr0pZhE/od6/public/full?alt=json&sq=hero%3D"+heroName;
+		var url = "https://spreadsheets.google.com/feeds/list/1pNRoV5zKlGfvh4WKO8_TbU2c_7SRQkj4tXPYrr0pZhE/od6/public/full?alt=json&sq=hero%3D"+heroName;
 		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.feed.openSearch$totalResults.$t > 0) {
@@ -68,7 +116,7 @@ angular.module('MHDC15App')
 	}
 	
 	var loadHeroSynergies = function() {
-		url = "https://spreadsheets.google.com/feeds/list/1titE_7MhZYN8D1U-Rc9Pb80f8w9R1c649XhOpNbVbW0/od6/public/full?alt=json";
+		var url = "https://spreadsheets.google.com/feeds/list/1titE_7MhZYN8D1U-Rc9Pb80f8w9R1c649XhOpNbVbW0/od6/public/full?alt=json";
 		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.feed.openSearch$totalResults.$t > 0) {
@@ -90,7 +138,7 @@ angular.module('MHDC15App')
 	}
 	
 	var loadHeroSkills = function(heroName) {
-		url = "https://spreadsheets.google.com/feeds/list/1qlRMZw0AoxrVL5Pp9qLaBt-_v92WrTC6jFZrHun4d4M/od6/public/full?alt=json&sq=heroname%3D"+heroName;
+		var url = "https://spreadsheets.google.com/feeds/list/1qlRMZw0AoxrVL5Pp9qLaBt-_v92WrTC6jFZrHun4d4M/od6/public/full?alt=json&sq=heroname%3D"+heroName;
 		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.feed.openSearch$totalResults.$t > 0) {
@@ -125,7 +173,7 @@ angular.module('MHDC15App')
 	}
 	
 	var loadPlayerHero = function(user) {
-		url = "https://spreadsheets.google.com/feeds/list/1n1i4GvdwohX3pwR3z9pQEGwrcsdev3l3YCn4ky11dP4/od6/public/full?alt=json&sq=user%3D"+user+"%20and%20heroname%3D"+$hero.name;
+		var url = "https://spreadsheets.google.com/feeds/list/1n1i4GvdwohX3pwR3z9pQEGwrcsdev3l3YCn4ky11dP4/od6/public/full?alt=json&sq=user%3D"+user+"%20and%20heroname%3D"+$hero.name;
 		$http.get(url)
 		.success(function(resp) {
 			if (resp.feed.openSearch$totalResults.$t > 0) {
