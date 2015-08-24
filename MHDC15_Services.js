@@ -81,10 +81,32 @@ angular.module('MHDC15App')
 		)
 	}
 	
+	var loadRelics = function() {
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Relics?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		return $http.get(url).then(
+			function(resp) {
+				if (resp.data.length > 0) {
+					resp.data.forEach(function(entry) {
+						$items.createRelic(
+							entry.name,
+							entry.stats
+						);
+					});
+					return "OK";
+				}
+			},
+			function(resp) {
+				alert("Failed to load data : " + resp);
+				return [];
+			}
+		)
+	}
+	
 	return {
 		loadHeroStats : loadHeroStats,
 		loadHeroSkills : loadHeroSkills,
-		loadHeroSynergies : loadHeroSynergies
+		loadHeroSynergies : loadHeroSynergies,
+		loadRelics : loadRelics
 	};
 })
 .factory('excelService', function($http, $hero, $items) {

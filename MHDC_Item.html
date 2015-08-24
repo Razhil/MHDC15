@@ -1,17 +1,18 @@
 <div class="box col-xs-12">
 	<div class="box-content">
 		<div class="row">
-			<span class="col-xs-8">Slot</span>
-			<span class="col-xs-4">{{item.slot}}</span>
-		</div>
-		<div class="row">
             <div class="col-xs-12">
-				<input id="name" type="text" data-ng-model="item.name" placeholder="Name" data-ng-disabled="readonly"></input>
+				<input id="name" type="text" data-ng-model="item.name" placeholder="Name" data-ng-disabled="readonly" data-ng-show="readonly"></input>
+			</div>
+			<div class="col-xs-12">
+				<select data-ng-model="itemChosen" data-ng-options="item as item.name for item in getItems()" 
+					data-ng-change="chooseItem()" data-ng-show="!readonly"></select>
 			</div>
 		</div>
 		<div data-ng-repeat="stat in item.stats" class="row">
 			<div class="col-xs-6">
-				<select data-ng-model="stat.name" data-ng-options="stat as getStatLabel(stat) for stat in stats" data-ng-disabled="readonly" data-ng-change="recalculate()"></select>
+				<select data-ng-model="stat.name" data-ng-change="recalculate()"
+					data-ng-options="stat as getStatLabel(stat) for stat in stats" data-ng-disabled="readonly || itemChosen"></select>
 			</div>
 			<div data-ng-class="{'col-xs-4':!readonly, 'col-xs-6':readonly}">
 				<input type="number" min="0" data-ng-model="stat.value" data-ng-disabled="readonly" data-ng-change="recalculate()"></input>

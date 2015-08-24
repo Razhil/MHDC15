@@ -1,13 +1,18 @@
 var enemyLvl = 60;
-var slots = ["Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Art1", "Art2", "Art3", "Art4", "Medal", "Relic", "Ring", "Legendary", "Costume", "Insignia", "Uru", "Team-Up"];
+var slotsData = ["Slot1", "Slot2", "Slot3", "Slot4", "Slot5", "Art1", "Art2", "Art3", "Art4", "Medal", "Relic", "Ring", "Legendary", "Costume", "Insignia", "Uru", "Team-Up"];
+var statsData = ["AS", "dmgRat", "dmgRat_physical", "dmgRat_energy", "dmgRat_mental", "dmgRat_melee", "dmgRat_ranged", "dmgRat_area", "dmgRat_dot", "dmgRat_summon",
+						"critRat", "critRat_physical", "critRat_energy", "critRat_mental", "critRat_melee", "critRat_ranged", "critRat_area", "critDmg", "brutRat", "brutDmg", 
+						"strength", "fighting", "speed", "energy", "intelligence", "tree1", "tree2", "tree3", "spirit"];
 
 angular.module('MHDC15App')
 .factory('$items', function() {
 	var items = [];
-	slots.forEach(function(slot) {
+	slotsData.forEach(function(slot) {
 		items.push(new Item(slot, ""));
 	});
 
+	var relics = [];
+	
 	/* To be moved */
 	var enchantments = InitEnchantments();
 	
@@ -146,6 +151,18 @@ angular.module('MHDC15App')
 	return {
 		createNewItem: function(slot, name) {
 			return new Item(slot, name);
+		},
+		createRelic : function(name, stats) {
+			var relic = new Item("Relic", name);
+			stats.forEach(function(stat) {
+				if (statsData.indexOf(stat.name) > -1) {
+					relic.addStat(stat.name, parseFloat(stat.value));
+				}
+			});
+			relics.push(relic);
+		},
+		getRelics: function() {
+			return relics;
 		},
 		getAll: function() {
 			return items

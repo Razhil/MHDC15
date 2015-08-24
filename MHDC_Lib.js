@@ -10,10 +10,10 @@ angular.module('MHDCLib', [])
 		},
 		restrict: 'A',
 		replace: 'true',
-		controller : function($scope, $hero) {
-			$scope.statsLabel = ["Attack Speed", "Damage Rating", "Damage Rating (Physical)", "Damage Rating (Energy)", "Damage Rating (Mental)", "Damage Rating (Melee)", "Damage Rating (Ranged)", "Damage Rating (Area)", "Damage Rating (DoT)", "Summon Damage",
-						"Critical Rating", "Critical Rating (Physical)", "Critical Rating (Energy)", "Critical Rating (Mental)", "Critical Rating (Melee)", "Critical Rating (Ranged)", "Critical Rating (Area)", "Critical Damage Rating", "Brutal Rating", "Brutal Damage Rating", 
-						"Strength", "Fighting", "Speed", "Energy", "Intelligence", "Tree 1", "Tree 2", "Tree 3"];
+		controller : function($scope, $hero, $items) {
+			$scope.statsLabel = ["Attack Speed", "Damage Rating", "Damage Rat. (Phys.)", "Damage Rat. (Energy)", "Damage Rat. (Mental)", "Damage Rat. (Melee)", "Damage Rat. (Ranged)", "Damage Rat. (Area)", "Damage Rat. (DoT)", "Summon Damage",
+						"Critical Rating", "Critical Rat. (Phys.)", "Critical Rat. (Energy)", "Critical Rat. (Mental)", "Critical Rat. (Melee)", "Critical Rat. (Ranged)", "Critical Rat. (Area)", "Critical Damage Rat.", "Brutal Rating", "Brutal Damage Rat.", 
+						"Strength", "Fighting", "Speed", "Energy", "Intelligence", "Tree 1", "Tree 2", "Tree 3", "Spirit"];
 			$scope.addStat = function(item) {
 				if (item.stats.length < 10) {
 					item.addStat("", null);
@@ -58,6 +58,19 @@ angular.module('MHDCLib', [])
 			
 			$scope.recalculate = function() {
 				$hero.calculate();
+			}
+			
+			$scope.getItems = function() {
+				return $items.getRelics();
+			}
+			
+			$scope.chooseItem = function() {
+				$scope.item.name = $scope.itemChosen.name;
+				$scope.item.stats = [];
+				$scope.itemChosen.stats.forEach(function(stat) {
+					$scope.item.addStat(stat.name, stat.value);
+				});
+				$scope.recalculate();
 			}
 		},
 		templateUrl: 'MHDC_Item.html'

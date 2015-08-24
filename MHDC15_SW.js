@@ -35,7 +35,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		$scope.isViewLoading = false;
 	});
 })
-.controller('SWCtrl', function ($scope, $hero, $items, excelService) {
+.controller('SWCtrl', function ($scope, $hero, $items, excelService, dataService) {
 	/* Default view state */
 	$scope.showInput = "items";
 	$scope.showInfo = "skills";
@@ -70,6 +70,10 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 				};
 			}
 		});
+		
+		if (item.slot == "Relic" && !$items.getRelics().length > 0) {
+			dataService.loadRelics();
+		}
 	};
 	
 	$scope.cancelEdit = function() {
