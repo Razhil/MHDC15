@@ -81,13 +81,35 @@ angular.module('MHDC15App')
 		)
 	}
 	
-	var loadRelics = function() {
-		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Relics?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
-		return $http.get(url).then(
+	var getServiceUrl = function(itemType) {
+		if (itemType == "Artifact") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Artifacts?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Legendary") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Legendaries?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Medal") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Medallions?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Relic") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Relics?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Slot1") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot1?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Slot2") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot2?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Slot3") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot3?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Slot4") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot4?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		} else if (itemType == "Slot5") {
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot5?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		}
+	}
+	
+	var loadItems = function(itemType) {
+		return $http.get(getServiceUrl(itemType)).then(
 			function(resp) {
 				if (resp.data.length > 0) {
 					resp.data.forEach(function(entry) {
-						$items.createRelic(
+						$items.createItem(
+							itemType,
 							entry.name,
 							entry.stats
 						);
@@ -106,7 +128,7 @@ angular.module('MHDC15App')
 		loadHeroStats : loadHeroStats,
 		loadHeroSkills : loadHeroSkills,
 		loadHeroSynergies : loadHeroSynergies,
-		loadRelics : loadRelics
+		loadItems: loadItems
 	};
 })
 .factory('excelService', function($http, $hero, $items) {

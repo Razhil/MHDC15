@@ -97,20 +97,27 @@
 				</div>
 			</div>
 		</div>
-		<div class="box col-xs-12" data-ng-show="newItem">
+		<div class="box col-xs-12" data-ng-if="newItem">
 			<div class="row">
 				<div class="col-xs-12 center bold">
 					{{oldItem.slot}}
 				</div>
 			</div>
-			<div data-item-box item="oldItem" stats="stats" skills="hero.skills" enchantments="enchantments" readonly="true" class="col-xs-5"></div>
-			<div class="col-xs-2 center bold">
-				=>
-			</div>
-			<div data-item-box item="newItem" stats="stats" skills="hero.skills" enchantments="enchantments" class="col-xs-5"></div>
 			<div class="row">
 				<div class="col-xs-12">
-					<input type="button" value="Close" data-ng-click="cancelEdit()">
+					<div data-item-box item="oldItem" stats="stats" skills="hero.skills" enchantments="enchantments" readonly="true" class="col-xs-5"></div>
+					<div class="col-xs-2 center bold">
+						=>
+					</div>
+					<div data-item-box item="newItem" stats="stats" skills="hero.skills" enchantments="enchantments" class="col-xs-5"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-5">
+					<input type="button" value="Cancel" data-ng-click="cancelEdit()">
+				</div>
+				<div class="col-xs-offset-2 col-xs-5">
+					<input type="button" value="Confirm" data-ng-click="confirmEdit()">
 				</div>
 			</div>
 		</div>

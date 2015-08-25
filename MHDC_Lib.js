@@ -60,8 +60,12 @@ angular.module('MHDCLib', [])
 				$hero.calculate();
 			}
 			
-			$scope.getItems = function() {
-				return $items.getRelics();
+			$scope.getItems = function(slot) {
+				if (["Art1", "Art2", "Art3", "Art4"].indexOf(slot) > -1) {
+					return $items.getItems("Artifact");
+				} else {
+					return $items.getItems(slot);
+				}
 			}
 			
 			$scope.chooseItem = function() {

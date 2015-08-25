@@ -71,8 +71,12 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 			}
 		});
 		
-		if (item.slot == "Relic" && !$items.getRelics().length > 0) {
-			dataService.loadRelics();
+		if (["Art1", "Art2", "Art3", "Art4"].indexOf(item.slot) > -1) {
+			if (!$items.getItems("Artifact").length > 0) {
+				dataService.loadItems("Artifact");
+			}
+		} else if (!$items.getItems(item.slot).length > 0) {
+			dataService.loadItems(item.slot);
 		}
 	};
 	
@@ -80,6 +84,11 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		var index = $scope.items.indexOf($scope.newItem);
 		$scope.items[index] = $scope.oldItem;
 		
+		$scope.newItem = null;
+		$scope.hero.calculate();
+	}
+	
+	$scope.confirmEdit = function() {
 		$scope.newItem = null;
 		$scope.hero.calculate();
 	}

@@ -5,7 +5,7 @@
 				<input id="name" type="text" data-ng-model="item.name" placeholder="Name" data-ng-disabled="readonly" data-ng-show="readonly"></input>
 			</div>
 			<div class="col-xs-12">
-				<select data-ng-model="itemChosen" data-ng-options="item as item.name for item in getItems()" 
+				<select data-ng-model="itemChosen" data-ng-options="i as i.name for i in getItems(item.slot)" 
 					data-ng-change="chooseItem()" data-ng-show="!readonly"></select>
 			</div>
 		</div>
