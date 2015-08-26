@@ -34,10 +34,14 @@ input {
 	width: 100%;
 	margin: 2px 0;
 	height: 25px;
+	box-shadow: 3px 3px 5px rgba(0,0,0,0.7);
+}
+input[type="radio"] {
+	height: auto;
+	box-shadow: none;
 }
 label input[type="radio"] {
 	width: auto;
-	height: auto;
 }
 select {
 	color: #333333;
@@ -46,6 +50,9 @@ select {
 }
 a, a:visited {
 	color: #AAAAAA;
+}
+label {
+	display: inline-block
 }
 /* END GENERIC STYLES */
 
@@ -112,20 +119,12 @@ ul.menu li.active {
 	background-color: #00283B;
 	border-bottom: none;
 }
-
-label {
-	display: inline-block
-}
-input {
-	box-shadow: 3px 3px 5px rgba(0,0,0,0.7);
-}
 input.small, .box input.small {
 	min-width: 40px;
 }
 input.ng-invalid {
 	border: 2px solid red;
 }
-
 
 .slide.ng-hide-remove,
 .slide.ng-hide-add {
