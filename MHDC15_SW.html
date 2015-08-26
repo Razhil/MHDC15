@@ -93,7 +93,7 @@
 			</div>
 			<div class="row box-content">
 				<div class="col-xs-12">
-					<input type="button" value="Save your profile" data-ng-click="updateDB(hero)">
+					<input type="button" value="Save your profile" data-ng-click="updateDB()">
 				</div>
 			</div>
 		</div>
@@ -200,7 +200,7 @@
 							<input type="checkbox" data-ng-model="effect.buffEnabled" data-ng-show="effect.isBuff()">
 						</div>
 						<div class="col-xs-11">
-							<span>{{getStatLabel(effect.stat.name)}}</span> : <span>+ {{effect.getStatValue(effect.stat.name, false) | number:1}}</span>
+							<span>{{getStatLabel(effect.stat.name)}}</span> : <span>+ {{effect.getStatValue(skill.totalLvl(), effect.stat.name, false) | number:1}}</span>
 						</div>
 					</div>
 				</div>
