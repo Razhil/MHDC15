@@ -485,38 +485,38 @@ angular.module('MHDC15App')
 		this.getStatValue = function(statName, includeSkillScope) {
 			var skill = this;
 			var total = 0;
-			var totalLvl = this.totalLvl();
-			if (totalLvl > 0) {
+			var skillLvl = this.totalLvl();
+			if (skillLvl > 0) {
 				this.getPassiveEffects().forEach(function(effect) {
-					total += effect.getStatValue(statName, includeSkillScope);
+					total += effect.getStatValue(skillLvl, statName, includeSkillScope);
 				});
 			}
 			return total;
 		}
 		
 		this.addActiveEffect = function(name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags) {
-			this.effects.push(new ActiveEffect(this, name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags));
+			this.effects.push(new ActiveEffect(name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags));
 		}
 		this.addPassiveEffect = function(name, value, scope) {
-			this.effects.push(new PassiveEffect(this, name, value, scope));
+			this.effects.push(new PassiveEffect(name, value, scope));
 		}
 		this.addSpecialEffect = function(name, statName, scope) {
-			this.effects.push(new SpecialEffect(this, name, statName, scope));
+			this.effects.push(new SpecialEffect(name, statName, scope));
 		}
 		
 		this.calculate = function() {
 			var totalDps = 0;
+			var skillLvl = this.totalLvl();
 			
 			this.getActiveEffects().forEach(function(activeEffect) {
-				activeEffect.calculate();
+				activeEffect.calculate(skillLvl);
 				totalDps += activeEffect.dps;
 			});	
 			this.dps = totalDps;
 		}
 	}
 	
-	function ActiveEffect(skill, name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags) {
-		this.skill = skill;
+	function ActiveEffect(name, lvl1MinDmg, lvl1MaxDmg, baseAS, duration, cooldown, procRate, damageType, proximity, extraTags) {
 		this.name = name;
 		this.lvl1MinDmg = lvl1MinDmg;
 		this.lvl1MaxDmg = lvl1MaxDmg;
@@ -571,9 +571,9 @@ angular.module('MHDC15App')
 			return this.extraTags.indexOf("S") > -1;
 		}
 		
-		this.calculateBaseDmg = function() {
+		this.calculateBaseDmg = function(skillLvl) {
 			var avgDmg = (this.lvl1MinDmg + this.lvl1MaxDmg)/2;
-			var level = (skill.totalLvl() > 0 ? (skill.totalLvl()-1) : 0);
+			var level = (skillLvl > 0 ? (skillLvl-1) : 0);
 			return avgDmg * (1+(0.1*level)) / (1 + 
 				(this.isPhysical() ? hero.getPhysicalBonusDmg(false) : 0) +
 				(this.isEnergy() || this.isMental() ? hero.getMentalBonusDmg(false) : 0) + 
@@ -582,8 +582,8 @@ angular.module('MHDC15App')
 				(this.isSummon() ? hero.getSummonBonusDmg(false) : 0));
 				
 		};
-		this.calculateAS = function() {
-			return this.isDot() || this.isMvt() || this.hasCooldown() || this.isSummon() ? this.baseAS : (this.baseAS * (1+hero.AS/100) * (this.isBarrage() ? (1+(skill.lvl-1)/100) : 1));
+		this.calculateAS = function(skillLvl) {
+			return this.isDot() || this.isMvt() || this.hasCooldown() || this.isSummon() ? this.baseAS : (this.baseAS * (1+hero.AS/100) * (this.isBarrage() ? (1+(skillLvl-1)/100) : 1));
 		};
 		this.calculateDmgRat = function() {
 			return hero.dmgRat + 
@@ -664,9 +664,9 @@ angular.module('MHDC15App')
 			return this.dmg*this.critFact*this.AS + $items.getProcs()*this.AS*this.procRate;
 		};
 		
-		this.calculate = function() {
-			this.baseDmg = this.calculateBaseDmg();
-			this.AS = this.calculateAS();
+		this.calculate = function(skillLvl) {
+			this.baseDmg = this.calculateBaseDmg(skillLvl);
+			this.AS = this.calculateAS(skillLvl);
 			this.dmgRat = this.calculateDmgRat();
 			this.dmgRatFact = this.calculateDmgRatFact();
 			this.dmgFact = this.calculateDmgFact();
@@ -680,8 +680,7 @@ angular.module('MHDC15App')
 		}
 	};
 
-	function PassiveEffect(skill, name, value, scope) {
-		this.skill = skill;
+	function PassiveEffect(name, value, scope) {
 		this.stat = new Stat(name, value);
 		this.scope = scope;
 		this.buffEnabled = false;
@@ -706,7 +705,7 @@ angular.module('MHDC15App')
 			return this.scope.indexOf("B") > -1;
 		}
 		
-		this.getStatValue = function(statName, includeSkillScope) {
+		this.getStatValue = function(skillLvl, statName, includeSkillScope) {
 			var total = 0;
 			if (includeSkillScope || !this.isSkillScope()) {
 				if (this.stat.name == statName && (!this.isBuff() || this.isBuffEnabled())) {
@@ -721,7 +720,7 @@ angular.module('MHDC15App')
 						} else {
 							gainPerLevel = this.stat.value * 0.1;
 						}
-						total += this.stat.value + (gainPerLevel * (this.skill.totalLvl()-1));
+						total += this.stat.value + (gainPerLevel * (skillLvl-1));
 					}
 				}
 			}
@@ -729,9 +728,8 @@ angular.module('MHDC15App')
 		}
 	};
 
-	function SpecialEffect(skill, name, statName, scope) {
+	function SpecialEffect(name, statName, scope) {
 		this.name = name;
-		this.skill = skill;
 		this.stat = new Stat(statName, 0);
 		this.scope = scope;
 		this.buffEnabled = false;
@@ -756,7 +754,7 @@ angular.module('MHDC15App')
 			return this.scope.indexOf("B") > -1;
 		}
 		
-		this.getStatValue = function(statName, includeSkillScope) {
+		this.getStatValue = function(skillLvl, statName, includeSkillScope) {
 			var total = 0;
 			if (includeSkillScope || !this.isSkillScope()) {
 				if (this.stat.name == statName && (!this.isBuff() || this.isBuffEnabled())) {
