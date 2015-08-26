@@ -93,6 +93,10 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		$scope.hero.calculate();
 	}
 	
+	$scope.updateDB = function() {
+		dataService.savePlayerHero();
+	}
+	
 	/* TO BE MOVED, there should be a better way of doing labeling */
 	$scope.stats = ["AS", "dmgRat", "dmgRat_physical", "dmgRat_energy", "dmgRat_mental", "dmgRat_melee", "dmgRat_ranged", "dmgRat_area", "dmgRat_dot", "dmgRat_summon",
 						"critRat", "critRat_physical", "critRat_energy", "critRat_mental", "critRat_melee", "critRat_ranged", "critRat_area", "critDmg", "brutRat", "brutDmg", 
