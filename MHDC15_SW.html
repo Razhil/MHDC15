@@ -57,7 +57,7 @@
 						<h3 class="row center col-xs-12">Decimation</h3>
 						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree1'}" class="row" data-ng-class-even="'even'">
 							<div class="col-xs-8">
-								<span>{{skill.name}}</span>
+								<img src="data:image/png;base64,{{skill.icon}}" data-ng-if="skill.icon"></img> <span>{{skill.name}}</span>
 							</div>
 							<div class="col-xs-4 right">
 								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center" data-ng-change="hero.calculate()"></input>
@@ -68,7 +68,7 @@
 						<h3 class="row center col-xs-12">Negation</h3>
 						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree2'}" class="row" data-ng-class-even="'even'">
 							<div class="col-xs-8">
-								<span>{{skill.name}}</span>
+								<img src="data:image/png;base64,{{skill.icon}}" data-ng-if="skill.icon"></img> <span>{{skill.name}}</span>
 							</div>
 							<div class="col-xs-4 right">
 								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center" data-ng-change="hero.calculate()"></input>
@@ -79,7 +79,7 @@
 						<h3 class="row center col-xs-12">Disruption</h3>
 						<div data-ng-repeat="skill in hero.skills | filter: {'tree': 'tree3'}" class="row" data-ng-class-even="'even'">
 							<div class="col-xs-8">
-								<span>{{skill.name}}</span>
+								<img src="data:image/png;base64,{{skill.icon}}" data-ng-if="skill.icon"></img> <span>{{skill.name}}</span>
 							</div>
 							<div class="col-xs-4 right">
 								<input type="number" min="0" max="20" data-ng-model="skill.lvl" class="small center" data-ng-change="hero.calculate()"></input>
@@ -132,7 +132,7 @@
 				<div data-ng-repeat="skill in hero.skills | filter: skillLvlFilter" data-ng-class-even="'even'">
 					<div class="row">
 						<div class="col-xs-6">
-							<span>{{skill.name}}</span>
+							<img src="data:image/png;base64,{{skill.icon}}" data-ng-if="skill.icon"></img> <span>{{skill.name}}</span>
 						</div>
 						<div class="col-xs-2 right">
 							<div>Prio</div>
