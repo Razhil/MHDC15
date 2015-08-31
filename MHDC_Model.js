@@ -356,7 +356,9 @@ angular.module('MHDC15App')
 		this.getSkillsLevel = function() {
 			var skills = [];
 			this.skills.forEach(function(skill) {
-				skills.push({name:skill.name, lvl:skill.lvl});
+				if (skill.lvl > 0) {
+					skills.push({name:skill.name, lvl:skill.lvl});
+				}
 			});
 			return skills;
 		}
