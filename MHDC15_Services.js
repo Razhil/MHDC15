@@ -36,7 +36,7 @@ angular.module('MHDC15App')
 							}
 						});
 						if (!skill) {
-							skill = $hero.addSkill(entry.skillName, 20, entry.tree, []);
+							skill = $hero.addSkill(entry.skillName, 0, entry.tree, []);
 						}
 						
 						if (entry.effect == "Active") {
@@ -60,7 +60,7 @@ angular.module('MHDC15App')
 	}
 	
 	var loadHeroSynergies = function() {
-		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Synergies?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Synergies?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.length > 0) {
@@ -83,23 +83,23 @@ angular.module('MHDC15App')
 	
 	var getServiceUrl = function(itemType) {
 		if (itemType == "Artifact") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Artifacts?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Artifacts?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Legendary") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Legendaries?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Legendaries?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Medal") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Medallions?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Medallions?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Relic") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Relics?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Relics?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Slot1") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot1?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot1?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Slot2") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot2?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot2?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Slot3") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot3?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot3?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Slot4") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot4?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot4?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		} else if (itemType == "Slot5") {
-			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot5?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
+			return "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot5?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'name': 1}";
 		}
 	}
 	
@@ -124,20 +124,66 @@ angular.module('MHDC15App')
 		)
 	}
 	
-	var loadPlayerHero = function() {
-		alert("TODO");
+	var loadPlayerHero = function(playerName) {
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Users?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&q={'player':'"+playerName+"'}";
+		$http.get(url)
+		.success(function(resp) {
+			if (resp.length > 0) {
+				var hero = resp[0];
+				
+				hero.synergies.forEach(function(synergy) {
+					$hero.setSynergyLevel(synergy.name, synergy.lvl);
+				});
+					
+				hero.skills.forEach(function(skill) {
+					$hero.setSkillLevel(skill.name, skill.lvl);
+				});
+					
+				hero.items.forEach(function(loadedItem) {
+					var item = $items.getItemBySlot(loadedItem.slot);
+					if (item) {
+						item.name = loadedItem.name;
+						loadedItem.stats.forEach(function(stat) {
+							item.addStat(stat.name, stat.value);
+						});
+						loadedItem.procs.forEach(function(proc) {
+							item.addProc(proc.chance, proc.damage);
+						});
+						loadedItem.skillBonuses.forEach(function(skillBonus) {
+							item.addSkillBonus(skillBonus.skillName, skillBonus.value);
+						});
+						if (loadedItem.enchantment) {
+							item.setEnchantment(loadedItem.enchantment.name);
+						}
+					}
+				});
+				
+				$hero.calculate();
+			}
+		})
+		.error(function(resp) {
+			alert("Failed to load data : " + resp);
+		});
 	}
 	
-	var savePlayerHero = function() {
-		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Slot5?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_";
-		
+	var savePlayerHero = function(playerName) {
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Users?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&q={'player':'"+playerName+"'}&u=true";
+
 		var output = new Object();
-		
+		output.player = playerName;
 		output.name = $hero.name;
 		output.items = $items.getAll();
 		output.synergies = $hero.getActiveSynergies();
 		output.skills = $hero.getSkillsLevel();
-		alert(JSON.stringify(output));
+		
+		return $http.put(url, angular.toJson(output)).then(
+			function(resp) {
+				alert("Save successful !");
+			},
+			function(resp) {
+				alert("Failed to save data : " + resp);
+			}
+		)
 	}
 	
 	return {
@@ -148,66 +194,4 @@ angular.module('MHDC15App')
 		loadPlayerHero : loadPlayerHero,
 		savePlayerHero : savePlayerHero
 	};
-})
-.factory('excelService', function($http, $hero, $items) {
-	var loadPlayerHero = function(user) {
-		var url = "https://spreadsheets.google.com/feeds/list/1n1i4GvdwohX3pwR3z9pQEGwrcsdev3l3YCn4ky11dP4/od6/public/full?alt=json&sq=user%3D"+user+"%20and%20heroname%3D"+$hero.name;
-		$http.get(url)
-		.success(function(resp) {
-			if (resp.feed.openSearch$totalResults.$t > 0) {
-				resp.feed.entry.forEach(function(entry) {
-					var slot = entry.gsx$slot.$t;
-					if (slot == "Synergies") {
-						var synergies = JSON.parse(entry.gsx$name.$t);
-						synergies.forEach(function(synergy) {
-							$hero.setSynergyLevel(synergy.name, synergy.lvl);
-						});
-					} else if (slot == "Skills") {
-						var skills = JSON.parse(entry.gsx$name.$t);
-						skills.forEach(function(skill) {
-							$hero.setSkillLevel(skill.name, skill.lvl);
-						});
-					} else {
-						var loadedItem = JSON.parse(entry.gsx$name.$t);
-						var item = $items.getItemBySlot(loadedItem.slot);
-						if (item) {
-							item.name = loadedItem.name;
-							loadedItem.stats.forEach(function(stat) {
-								item.addStat(stat.name, stat.value);
-							});
-							loadedItem.procs.forEach(function(proc) {
-								item.addProc(proc.chance, proc.damage);
-							});
-							loadedItem.skillBonuses.forEach(function(skillBonus) {
-								item.addSkillBonus(skillBonus.skillName, skillBonus.value);
-							});
-							if (loadedItem.enchantment) {
-								item.setEnchantment(loadedItem.enchantment.name);
-							}
-							/*if (loadedItem.itemId) {
-								$http.get("https://spreadsheets.google.com/feeds/list/1-NVwOqkajupPMSK7UbeP7HcDqy_T6aSEs6_v1iv3MrI/od6/public/full?alt=json&sq=id%3D"+loadedItem.itemId)
-								.success(function(resp) {
-									if (resp.feed.openSearch$totalResults.$t > 0) {
-										item.itemId = loadedItem.itemId;
-										item.name = resp.feed.entry[0].gsx$name.$t;
-										item.link = resp.feed.entry[0].gsx$link.$t;
-										item.link = item.link.replace(/\{(.*?)\}/g, function(s, m1) {return item.getStat(m1);});
-										IB_Init();
-									}
-								});
-							}*/
-						}
-					}
-				});
-				$hero.calculate();
-			}
-		})
-		.error(function(resp) {
-			alert("Failed to load data : " + resp);
-		});
-	}
-	
-	return {
-		loadPlayerHero : loadPlayerHero
-	};
-})
+});
