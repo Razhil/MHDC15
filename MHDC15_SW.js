@@ -35,7 +35,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 		$scope.isViewLoading = false;
 	});
 })
-.controller('SWCtrl', function ($scope, $hero, $items, excelService, dataService) {
+.controller('SWCtrl', function ($scope, $hero, $items, dataService) {
 	/* Default view state */
 	$scope.showInput = "items";
 	$scope.showInfo = "skills";
@@ -43,7 +43,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	/* Init model */
 	$scope.hero = $hero;
 	$scope.items = $items.getAll();
-	excelService.loadPlayerHero("Razhil");
+	dataService.loadPlayerHero("Razhil");
 	
 	$scope.skillLvlFilter = function(skill){
 		return skill.lvl > 0;
@@ -52,6 +52,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	$scope.editItem = function(item) {
 		$scope.oldItem = item;
 		$scope.newItem = $items.createNewItem(item.slot, "");
+		$scope.newItem.enchantment = $scope.oldItem.enchantment;
 		
 		$scope.hero.skills.forEach(function(skill) {
 			if (skill.dps > 0) {
@@ -94,7 +95,7 @@ angular.module('MHDC15App', ['MHDCLib', 'ngAnimate', 'ngRoute'])
 	}
 	
 	$scope.updateDB = function() {
-		dataService.savePlayerHero();
+		dataService.savePlayerHero("Razhil");
 	}
 	
 	/* TO BE MOVED, there should be a better way of doing labeling */
