@@ -1,5 +1,38 @@
 <div class="col-xs-12">
 	<div class="row">
+		<div class="box col-xs-12">
+			<ul class="row menu">
+				<li class="col-xs-12 active">Rotation</li>
+			</ul>
+			<div class="box-content row">
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio1" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio2" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio3" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio4" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio5" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+				<div class="col-xs-2">
+					<select data-ng-model="hero.rotation.prio6" data-ng-options="skill as skill.name for skill in hero.skills"></select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 center bold">
+					Damage per minute : <span data-ng-show="oldDPM">{{oldDPM | number:0}} DPM -> </span>{{calcDPM() | number:0}} DPM 
+					<span class="bold" data-ng-show="oldDPM">({{(calcDPM() - oldDPM)*100 / oldDPM | number:2}}%)</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
 		<div class="box col-xs-12" data-ng-show="!newItem">
 			<ul class="row menu">
 				<li class="col-xs-3" data-ng-class="showInput=='items' ? 'active' : ''" data-ng-click="showInput='items'">Items</li>
@@ -125,7 +158,7 @@
 	<div class="row">
 		<div class="box col-xs-12">
 			<ul class="row menu">
-				<li class="col-xs-12" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="showInfo='skills'">Skills</li>
+				<li class="col-xs-12" data-ng-class="showInfo=='skills' ? 'active' : ''" data-ng-click="(showInfo=='skills'?showInfo='':showInfo='skills')">Skills details</li>
 				<!--li class="col-xs-6" data-ng-class="showInfo=='stats' ? 'active' : ''" data-ng-click="showInfo='stats'">Stats</li-->
 			</ul>
 			<div class="box-content" data-ng-show="showInfo=='skills'">
@@ -134,13 +167,7 @@
 						<div class="col-xs-6">
 							<img src="data:image/png;base64,{{skill.icon}}" data-ng-if="skill.icon"></img> <span>{{skill.name}}</span>
 						</div>
-						<div class="col-xs-2 right">
-							<div>Prio</div>
-						</div>
-						<div class="col-xs-1">
-							<input type="number" data-ng-model="skill.prio">
-						</div>
-						<div class="col-xs-3 right">
+						<div class="col-xs-6 right">
 							<div>Lvl {{skill.totalLvl(hero)}}</div>
 						</div>
 					</div>
@@ -219,14 +246,5 @@
 				</div>
 			</div-->
 		</div>
-		<div class="box col-xs-12">
-			<div>Time to kill a 5M HP Dummy using the skills following "prio" order : </div>
-			<div>{{calcTTK(5000000)}}</div>
-		</div>
 	</div>
-	<!--div style="display:none;">
-		<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-		<form method="post" action="https://script.google.com/macros/s/AKfycbwyQGyPTBEqkwuEQKRcYq1YHDqfgSRuBUHoBS_xu8ZeRRUQBEw/exec" 
-			name="theForm" id="theForm" target="hidden_iframe" enctype='application/json' style="display:none;"></form>
-	</div-->
 </div>

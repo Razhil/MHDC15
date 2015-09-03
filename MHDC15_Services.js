@@ -158,6 +158,14 @@ angular.module('MHDC15App')
 					}
 				});
 				
+				if (hero.rotation) {
+					$hero.rotation = new Object();
+					
+					Object.keys(hero.rotation).forEach(function(key) {
+						$hero.rotation[key] = $hero.getSkillByName(hero.rotation[key]);
+					});
+				}
+				
 				$hero.calculate();
 			}
 		})
@@ -172,6 +180,10 @@ angular.module('MHDC15App')
 		var output = new Object();
 		output.player = playerName;
 		output.name = $hero.name;
+		output.rotation = new Object();
+		Object.keys($hero.rotation).forEach(function(key) {
+			output.rotation[key] = $hero.rotation[key].name;
+		});
 		output.items = $items.getAll();
 		output.synergies = $hero.getActiveSynergies();
 		output.skills = $hero.getSkillsLevel();
