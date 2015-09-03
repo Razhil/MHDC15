@@ -29,14 +29,10 @@ angular.module('MHDC15App')
 			function(resp) {
 				if (resp.data.length > 0) {
 					resp.data.forEach(function(entry) {
-						var skill;
-						$hero.skills.forEach(function(heroSkill) {
-							if (heroSkill.name == entry.skillName) {
-								skill = heroSkill;
-							}
-						});
+						var skill = $hero.getSkillByName(entry.skillName);
 						if (!skill) {
 							skill = $hero.addSkill(entry.skillName, 0, entry.tree, []);
+							skill.icon = entry.icon;
 						}
 						
 						if (entry.effect == "Active") {
