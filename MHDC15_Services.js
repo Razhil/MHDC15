@@ -24,7 +24,7 @@ angular.module('MHDC15App')
 	}
 	
 	var loadHeroSkills = function(heroName) {
-		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Skills?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_"; //"Skills_"+heroName+".json"
+		var url = "https://api.mongolab.com/api/1/databases/mhdc_db/collections/Skills?apiKey=aEDoJR0l_r7yjOT9w9tJ3WpgN0fi4jJ_&s={'tree':1,'index':1}"; //"Skills_"+heroName+".json"
 		return $http.get(url).then(
 			function(resp) {
 				if (resp.data.length > 0) {
